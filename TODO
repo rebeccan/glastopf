@@ -1,0 +1,39 @@
+IMPLEMENTATION TODOs
+--------------------
+
+- add sqlite database: data
+    Mapping to Data class
+    
+- add intelligent identification columns to attacker database
+
+- add unique data databasename to each Attacker
+
+- make "copy-pool" of data database
+
+- 1 to 1 relation of copy-data-db and attacker-db
+
+- reuse mechanism of copy-data-db, accordingly to attacker
+
+- SQL Injection let through
+
+- let copy-data-dbs only run in a sandbox (Dionaea?)
+
+- make input fields of GUI injectable
+
+
+IMPLEMENTATION DONEs
+--------------------
+
+- add sqlite datasbase: attacker
+    Mapping to Attacker class
+
+_________________________________________________________________
+
+TESTING DOs
+-----------
+
+
+TESTING DONEs
+-------------
+
+_________________________________________________________________

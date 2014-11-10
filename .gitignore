@@ -37,3 +37,9 @@ glastopf.cfg
 .idea
 
 *.gz
+.vagrant/
+data/
+*.db
+*.komodoproject
+Vagrantfile
+log/

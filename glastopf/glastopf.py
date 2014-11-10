@@ -35,6 +35,7 @@ import modules.HTTP.method_handler as method_handler
 import modules.events.attack as attack
 from modules.handlers.request_handler import RequestHandler
 from modules import logging_handler, vdocs
+from modules.attacker.attacker import Attacker
 import shutil
 import modules.privileges as privileges
 #import modules.processing.profiler as profiler
@@ -72,9 +73,11 @@ class GlastopfHoneypot(object):
             "proxy_enabled": conf_parser.get("webserver", "proxy_enabled").encode('latin1'),
             "banner": conf_parser.get("misc", "banner").encode('latin1'),
         }
-
+        
+        (self.attackerdb) = self.setup_attacker_database(conf_parser)
+        
         (self.maindb, self.dorkdb) = self.setup_main_database(conf_parser)
-
+        
         self.dork_generator = self.setup_dork_generator(conf_parser, self.work_dir)
 
         if len(self.dork_generator.get_current_pages()) == 0:
@@ -171,6 +174,24 @@ class GlastopfHoneypot(object):
             dorkdb = database_sqla.Database(sqla_engine)
             #disable usage of main logging datbase
             return None, dorkdb
+
+    def setup_attacker_database(self, conf_parser):
+        connection_string_attacker = conf_parser.get("attacker-database", "connection_string_attacker")
+        logger.info("Connecting to attacker database with: {0}".format(connection_string_attacker))
+        attackerdb_session = Attacker.connect(connection_string_attacker)
+        #test if insertion works
+        #Attacker.insert_unique(attackerdb_session, Attacker('127.0.0.1'))
+        #Attacker.insert_unique(attackerdb_session, Attacker('192.168.32.1'))
+        #Attacker.insert_unique(attackerdb_session, Attacker('192.168.32.1'))
+        #Attacker.insert_unique(attackerdb_session, Attacker('192.168.32.2'))
+        return attackerdb_session
+    
+    #def setup_data_database(self, conf_parser):
+    #    connection_string_data = conf_parser.get("data-database", "connection_string_data")
+    #    sqla_engine = create_engine(connection_string_data)
+        #TODO write Database class of file xxx.py
+    #    datadb = xxx.Database(sqla_engine)
+    #    return datadb
 
     @staticmethod
     def prepare_sandbox(work_dir):

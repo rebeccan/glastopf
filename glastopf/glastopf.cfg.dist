@@ -37,6 +37,15 @@ enabled = True
 #mysql://james:bond@somehost.com/glastopf
 connection_string = sqlite:///db/glastopf.db
 
+[attacker-database]
+#this is the database where fingerprinting stuff of each attacker is held
+connection_string_attacker = sqlite:///db/attacker.db
+
+[data-database]
+#this is the database which is copied and sandboxed for the attacker
+#it should NOT contain sensitive data, bus honeytokens instead
+connection_string_data = sqlite:///db/data.db
+
 [surfcertids]
 enabled = False
 host = localhost
