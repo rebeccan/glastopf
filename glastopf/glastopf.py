@@ -179,11 +179,6 @@ class GlastopfHoneypot(object):
         connection_string_attacker = conf_parser.get("attacker-database", "connection_string_attacker")
         logger.info("Connecting to attacker database with: {0}".format(connection_string_attacker))
         attackerdb_session = Attacker.connect(connection_string_attacker)
-        #test if insertion works
-        #Attacker.insert_unique(attackerdb_session, Attacker('127.0.0.1'))
-        #Attacker.insert_unique(attackerdb_session, Attacker('192.168.32.1'))
-        #Attacker.insert_unique(attackerdb_session, Attacker('192.168.32.1'))
-        #Attacker.insert_unique(attackerdb_session, Attacker('192.168.32.2'))
         return attackerdb_session
     
     #def setup_data_database(self, conf_parser):

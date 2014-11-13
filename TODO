@@ -1,18 +1,7 @@
 IMPLEMENTATION TODOs
 --------------------
-
-- add sqlite database: data
-    Mapping to Data class
     
 - add intelligent identification columns to attacker database
-
-- add unique data databasename to each Attacker
-
-- make "copy-pool" of data database
-
-- 1 to 1 relation of copy-data-db and attacker-db
-
-- reuse mechanism of copy-data-db, accordingly to attacker
 
 - SQL Injection let through
 
@@ -20,12 +9,27 @@ IMPLEMENTATION TODOs
 
 - make input fields of GUI injectable
 
+- configuration: user can choose if he likes the approach of sql classification and fake answers or copied data db
+
+- relation attacker to ip_profile
+
+- Integrate attacker-db logic in Glastopf request pipeline
+
 
 IMPLEMENTATION DONEs
 --------------------
 
-- add sqlite datasbase: attacker
-    Mapping to Attacker class
+- add sqlite datasbase: attacker.db
+    Mapping Attacker class to attacker table
+    
+- add sqlite database: data.db
+    Mapping User class to user table
+    
+- add unique data databasename to each Attacker
+
+- reuse mechanism of copy-data-db, accordingly to attacker
+
+- 1 to 1 relation of copy-data-db and attacker-db
 
 _________________________________________________________________
 

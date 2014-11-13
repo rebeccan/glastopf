@@ -38,8 +38,18 @@ glastopf.cfg
 
 *.gz
 .vagrant/
-data/
 *.db
 *.komodoproject
 Vagrantfile
 log/
+data/dork_pages/
+data/favicon/
+data/phpinfo/
+data/phpmyadmin/
+data/robots/
+data/sandbox.php
+data/server_files/
+data/style/
+data/templates/
+data/tomcat/
+data/virtualdocs/
