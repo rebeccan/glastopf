@@ -30,11 +30,19 @@
     <patternString><![CDATA[.*((select|;)\s+(benchmark|if|sleep)).*]]></patternString>
     <module>unknown</module>
   </request>
+<!-- old sqli handler
+  TODO: let user choose in configuration
   <request>
     <id>5</id>
     <patternDescription>SQL injection</patternDescription>
     <patternString><![CDATA[.*(select|drop|update|union|insert|alter|declare|cast)( |\().*]]></patternString>
     <module>sqli</module>
+  </request> -->
+    <request>
+    <id>5</id>
+    <patternDescription>SQL injection</patternDescription>
+    <patternString><![CDATA[.*(select|drop|update|union|insert|alter|declare|cast)( |\().*]]></patternString>
+    <module>sqlinjectable</module>
   </request>
   <request>
     <id>6</id>

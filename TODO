@@ -3,17 +3,37 @@ IMPLEMENTATION TODOs
     
 - add intelligent identification columns to attacker database
 
-- SQL Injection let through
+- setup data.db, attacker.db in installation?
+
+- open db connections in beginning and close it in the end (same time as glastopf.db)
+
+- take all connection strings from cfg file
 
 - let copy-data-dbs only run in a sandbox (Dionaea?)
 
+- map user injected values to useful queries to comments and users tables
+
+- use comments table instead of comments.txt 
+
 - make input fields of GUI injectable
+    (seems to be a longer task, as the body seems to be ingored completely)
 
-- configuration: user can choose if he likes the approach of sql classification and fake answers or copied data db
+- configuration: user can choose emulators sqli and sqlintectable
 
-- relation attacker to ip_profile
+- relation attacker to ip_profile, inurl, etc...
 
-- Integrate attacker-db logic in Glastopf request pipeline
+- cleaning databases cron job:
+    - add timestamp of latest_activity to attacker
+    - delete all dataxx.db for attackers whose latest_activity is longer than one week
+    
+- sqlalchemy sessions and concurrency?
+
+
+IMPLEMENTATION IN PROGRESS
+--------------------------
+
+- Integrate attacker-db logic in Glastopf request handler
+    write SQLinjectableEmulator
 
 
 IMPLEMENTATION DONEs

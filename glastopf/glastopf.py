@@ -36,6 +36,8 @@ import modules.events.attack as attack
 from modules.handlers.request_handler import RequestHandler
 from modules import logging_handler, vdocs
 from modules.attacker.attacker import Attacker
+from modules.injectable.user import User
+from modules.injectable.comment import Comment
 import shutil
 import modules.privileges as privileges
 #import modules.processing.profiler as profiler
@@ -75,6 +77,7 @@ class GlastopfHoneypot(object):
         }
         
         (self.attackerdb) = self.setup_attacker_database(conf_parser)
+        (self.connection_string_data) = self.setup_data_database(conf_parser)
         
         (self.maindb, self.dorkdb) = self.setup_main_database(conf_parser)
         
@@ -175,18 +178,41 @@ class GlastopfHoneypot(object):
             #disable usage of main logging datbase
             return None, dorkdb
 
+    """
+    sets up the database for attacker fingerprinting,
+    which is needed during sqlinjected emulator
+    returns the session
+    """
     def setup_attacker_database(self, conf_parser):
         connection_string_attacker = conf_parser.get("attacker-database", "connection_string_attacker")
         logger.info("Connecting to attacker database with: {0}".format(connection_string_attacker))
         attackerdb_session = Attacker.connect(connection_string_attacker)
+        #create databasefile and a row with dummy data, if file is not present yet
+        path_to_sqlitefile = str(connection_string_attacker).replace('sqlite:///', '')
+        if not os.path.isfile(path_to_sqlitefile):
+            Attacker.insert_unique(attackerdb_sess, Attacker('127.0.0.1'))
         return attackerdb_session
     
-    #def setup_data_database(self, conf_parser):
-    #    connection_string_data = conf_parser.get("data-database", "connection_string_data")
-    #    sqla_engine = create_engine(connection_string_data)
-        #TODO write Database class of file xxx.py
-    #    datadb = xxx.Database(sqla_engine)
-    #    return datadb
+    """
+    sets up the original data database (filled with honeytokens), if not present yet.
+    (needed during sqlinjected emulator)
+    returns the connection string
+    """
+    def setup_data_database(self, conf_parser):
+        connection_string_data = conf_parser.get("data-database", "connection_string_data")
+        #create databasefile and a row with dummy data, if file is not present yet
+        #TODO: more rows, filled with honeytokens
+        path_to_sqlitefile = str(connection_string_data).replace('sqlite:///', '')
+        if not os.path.isfile(path_to_sqlitefile):
+            logger.info("Setting up data database with path: {0}".format(connection_string_data))
+            sqla_engine = create_engine(connection_string_data)
+            datadb_session = User.connect(connection_string_data)
+            datadb_session.add(User('blub@example.com', 'blub'))
+            Comment.connect(connection_string_data)
+            datadb_session.add(Comment('This is a comment.'))
+            datadb_session.commit()
+            datadb_session.close()
+        return connection_string_data
 
     @staticmethod
     def prepare_sandbox(work_dir):
@@ -282,7 +308,10 @@ class GlastopfHoneypot(object):
         # Handle the request with the specific vulnerability module
         request_handler = RequestHandler(os.path.join(self.work_dir, 'data/'))
         emulator = request_handler.get_handler(attack_event.matched_pattern)
-        emulator.handle(attack_event)
+        if(emulator.__class__.__name__ == "SQLinjectableEmulator"):
+            emulator.handle(attack_event, self.attackerdb, self.connection_string_data)
+        else:
+            emulator.handle(attack_event)
         # Logging the event
         if self.profiler_available:
             self.profiler.handle_event(attack_event)

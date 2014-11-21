@@ -1,4 +1,4 @@
-# Copyright (C) 2014  Rebecca neigert
+# Copyright (C) 2014  Rebecca Neigert
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,15 +17,8 @@
 
 import shutil
 import os.path
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 
-from modules.data.user import User
-
-Base = declarative_base()
-
-class DB_copy(User):
+class DB_copy():
     """
     Offers methods for copying the original database
     """

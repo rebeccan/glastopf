@@ -31,12 +31,17 @@ class Attacker(Base):
     __tablename__ = 'attackers'
     id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
     ip = Column(String(50))
-    #db_connection = Column(String(50))
     
     #create attacker with ip address
     def __init__(self,ip):
-        #self.id = None
         self.ip = str(ip)
+        #TODO: create fingerprint
+        # e.g. passive fingerprinting with following stuff:
+            #HTTP_ACCEPT': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            #'HTTP_ACCEPT_ENCODING': 'gzip, deflate',
+            #'HTTP_ACCEPT_LANGUAGE': 'de,en-US;q=0.7,en;q=0.3',
+            #'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20100101 Firefox/33.0',
+            
     
     def __repr__(self):
         return "<Attacker('%s')>" % (self.ip)
@@ -61,17 +66,20 @@ class Attacker(Base):
         return attackerdb_session
     
     """ insert a new attacker, if not present yet.
+    Returns the attacker given as parameter, if it was inserted
+    Returns the attacker from the database, if attacker was not inserted
     """
     @staticmethod
     def insert_unique(attackerdb_session, attacker):
-        if Attacker.find_equal(attackerdb_session, attacker) != None :
-            return False
+        attacker_existent = Attacker.find_equal(attackerdb_session, attacker)
+        if attacker_existent != None :
+            return attacker_existent
         attackerdb_session.add(attacker)
         attackerdb_session.commit()
-        return True
+        return attacker
     
     """finds the attacker in attacker-database equal to attacker-param
-    returns one or none"""
+    returns an attacker or none"""
     @staticmethod
     def find_equal(attackerdb_session, attacker):
         attacker_list = attackerdb_session.query(Attacker).filter_by(ip=attacker.ip)

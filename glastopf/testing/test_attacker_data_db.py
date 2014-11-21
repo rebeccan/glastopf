@@ -27,8 +27,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from modules.attacker.attacker import Attacker
-from modules.data.db_copy import DB_copy
-from modules.data.user import User
+from modules.injectable.db_copy import DB_copy
+from modules.injectable.user import User
 
 
 class TestAttackerDataDB(unittest.TestCase):
