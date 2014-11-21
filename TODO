@@ -3,15 +3,9 @@ IMPLEMENTATION TODOs
     
 - add intelligent identification columns to attacker database
 
-- setup data.db, attacker.db in installation?
-
-- open db connections in beginning and close it in the end (same time as glastopf.db)
-
-- take all connection strings from cfg file
+- close connections in the end (e.g. attackerdb_session)
 
 - let copy-data-dbs only run in a sandbox (Dionaea?)
-
-- map user injected values to useful queries to comments and users tables
 
 - use comments table instead of comments.txt 
 
@@ -32,8 +26,7 @@ IMPLEMENTATION TODOs
 IMPLEMENTATION IN PROGRESS
 --------------------------
 
-- Integrate attacker-db logic in Glastopf request handler
-    write SQLinjectableEmulator
+- map user injected values to useful queries to comments and users tables
 
 
 IMPLEMENTATION DONEs
@@ -50,6 +43,15 @@ IMPLEMENTATION DONEs
 - reuse mechanism of copy-data-db, accordingly to attacker
 
 - 1 to 1 relation of copy-data-db and attacker-db
+
+- take all connection strings from cfg file
+
+- Integrate attacker-db logic in Glastopf request handler
+    write SQLinjectableEmulator
+
+- open db connections in beginning
+
+- setup data.db, attacker.db if not present yet
 
 _________________________________________________________________
 
