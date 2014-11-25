@@ -1,6 +1,11 @@
 IMPLEMENTATION TODOs
 --------------------
-    
+
+- improve classification in requests.xml
+    problem: SQLinjectableEmulator is only ran, when classified as sqlinjectable
+    -> looks weired when an attacker tries to login normally
+    "/comments", "?login=bla&password=bla
+
 - add intelligent identification columns to attacker database
 
 - close connections in the end (e.g. attackerdb_session)
@@ -27,6 +32,16 @@ IMPLEMENTATION IN PROGRESS
 --------------------------
 
 - map user injected values to useful queries to comments and users tables
+
+- write test for SQLinjectableEmulator
+
+- Fix:
+        python -m unittest discover -s testing -p 'test_emulators.py'
+        -->
+        from __init__ import __version__
+        ImportError: No module named __init__
+
+
 
 
 IMPLEMENTATION DONEs

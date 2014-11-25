@@ -28,7 +28,7 @@ from glastopf.modules.handlers.request_handler import RequestHandler
 from glastopf.glastopf import GlastopfHoneypot
 import glastopf.modules.events.attack as attack
 from glastopf.modules.HTTP.handler import HTTPHandler
-
+from glastopf.modules.attacker.attacker import Attacker
 
 class TestEmulatorIntegration(unittest.TestCase):
     """Tests the honeypots request emulation modules.
@@ -285,6 +285,24 @@ class TestEmulatorIntegration(unittest.TestCase):
         emulator.handle(event)
         self.assertTrue("PHP Version " in event.http_request.get_response())
         self.assertTrue("Zend Extension" in event.http_request.get_response())
+        
+    def test_sqlinjectable_emulator(self):
+        #setup
+        attacker_connection_string = 'sqlite:///' + self.work_dir + '/attackerunittest.db'
+        abs_path = os.path.abspath("db/data.db").replace('glastopf/testing/', '')
+        data_connection_string = 'sqlite:///' + abs_path
+        attackerdb_session = Attacker.connect(attacker_connection_string)
+        #start attack
+        event = attack.AttackEvent()
+        event.source_addr = "127.0.0.1"
+        event.http_request = HTTPHandler('GET /login.php?login=bla&password=bla HTTP/1.0', None)
+        event.matched_pattern = "sqlinjectable"
+        request_handler = RequestHandler(self.data_dir)
+        emulator = request_handler.get_handler(event.matched_pattern)
+        emulator.handle(event, attackerdb_session, data_connection_string, self.work_dir)
+        #self.assertTrue("Wrong username or password." in event.http_request.get_response())
+        # clean up
+        attackerdb_session.close()
 
 
 if __name__ == '__main__':

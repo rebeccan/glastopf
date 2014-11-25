@@ -20,6 +20,7 @@ from glastopf.modules.handlers import base_emulator
 from glastopf.modules.attacker.attacker import Attacker
 from glastopf.modules.injectable.db_copy import DB_copy
 from glastopf.modules.injectable.user import User
+from glastopf.modules.injectable.queries import Mappings
 
 
 class SQLinjectableEmulator(base_emulator.BaseEmulator):
@@ -30,37 +31,25 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
     def __init__(self, data_dir):
         super(SQLinjectableEmulator, self).__init__(data_dir)
 
-    def handle(self, attack_event, attackerdb_session, connection_string_data):
+    def handle(self, attack_event, attackerdb_session, connection_string_data, work_dir = None):
         payload = "Payload generated from SQLinjectableEmulator"
         value = ""
         #attacker fingerprinting and insertion in attacker.db
         attacker = Attacker(str(attack_event.source_addr[0]))
         attacker = Attacker.insert_unique(attackerdb_session, attacker)
         #get dataxx.db for attacker xx, make copy if not present yet
-        copy_conn_string = attacker.get_copy_conn(connection_string_data)
-        copy = DB_copy('sqlite:///db/data.db', copy_conn_string)
+        if(work_dir == None):
+            copy_connection_string = attacker.get_copy_conn(connection_string_data)
+        else: copy_connection_string = attacker.get_copy_conn(connection_string_data, work_dir)
+        copy = DB_copy(connection_string_data, copy_connection_string)
         copy.create_copy()
-        datadb_session_copy = User.connect(copy_conn_string)
-        #identify and extract all user input
-        #make query with user input
-        login = ""
-        password = ""
-        comment = ""
-        query_dictionary = attack_event.http_request.request_query
-        if(query_dictionary.has_key('login')):
-            login = str(query_dictionary.get('login')[0])
-        if(query_dictionary.has_key('password')):
-            password = str(query_dictionary.get('password')[0])
-        query = "SELECT * FROM users WHERE email = '" + login + "' AND password = '" + password + "'"
-        injectionResult = User.injection(datadb_session_copy, query)
-        for row in injectionResult:
-            payload = payload + str(row['email'])
-            payload = payload + str(row['password'])
-        #form response with response from DB
-        #attack_event.http_request.set_raw_response(payload)
+        datadb_session_copy = User.connect(copy_connection_string)
+        #inject, form response
+        mappings = Mappings()
+        payload = mappings.getResponseForRequ(attack_event, datadb_session_copy)
         attack_event.http_request.set_response(payload)
         #close db connections
-        #attackerdb_session.close() # <-- TODO: when to close this?
+        #attackerdb_session.close() # <-- TODO RN: when to close this?
         datadb_session_copy.close()
 
 

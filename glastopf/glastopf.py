@@ -201,7 +201,7 @@ class GlastopfHoneypot(object):
     def setup_data_database(self, conf_parser):
         connection_string_data = conf_parser.get("data-database", "connection_string_data")
         #create databasefile and a row with dummy data, if file is not present yet
-        #TODO: more rows, filled with honeytokens
+        #TODO RN: more rows, filled with honeytokens
         path_to_sqlitefile = str(connection_string_data).replace('sqlite:///', '')
         if not os.path.isfile(path_to_sqlitefile):
             logger.info("Setting up data database with path: {0}".format(connection_string_data))

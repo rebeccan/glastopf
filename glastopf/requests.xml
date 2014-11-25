@@ -24,14 +24,20 @@
     <patternString><![CDATA[.*(<\?php).*]]></patternString>
     <module>unknown</module>
   </request>
-  <request>
+<!--    <request>
     <id>4</id>
     <patternDescription>SQL benchmark and sleep</patternDescription>
     <patternString><![CDATA[.*((select|;)\s+(benchmark|if|sleep)).*]]></patternString>
     <module>unknown</module>
+  </request> -->
+  <request>
+    <id>4</id>
+    <patternDescription>SQL benchmark and sleep</patternDescription>
+    <patternString><![CDATA[.*((select|;)\s+(benchmark|if|sleep)).*]]></patternString>
+    <module>sqlinjectable</module>
   </request>
 <!-- old sqli handler
-  TODO: let user choose in configuration
+  TODO RN: let user choose in configuration
   <request>
     <id>5</id>
     <patternDescription>SQL injection</patternDescription>

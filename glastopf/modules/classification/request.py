@@ -93,9 +93,11 @@ class Classifier(object):
         matched_patterns = []
         unquoted_url = urllib2.unquote(http_request.request_url)
         # SQLi early exit
+        # TODO RN: keep early exit if not sqlinjectable
         ret = self.sqli_c.classify(unquoted_url)
         if ret['sqli']:
-            return "sqli"
+            #return "sqli"
+            return "sqlinjectable"
         for pattern in patterns:
             match = None
             parsed_pattern = self.parse_pattern(pattern)

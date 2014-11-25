@@ -35,7 +35,7 @@ class Attacker(Base):
     #create attacker with ip address
     def __init__(self,ip):
         self.ip = str(ip)
-        #TODO: create fingerprint
+        #TODO RN: create fingerprint
         # e.g. passive fingerprinting with following stuff:
             #HTTP_ACCEPT': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             #'HTTP_ACCEPT_ENCODING': 'gzip, deflate',
@@ -48,11 +48,15 @@ class Attacker(Base):
     
     """ returns the string of the path to the data-database copy owned by the attacker
     """    
-    def get_copy_conn(self, connection_string_data = 'sqlite:///db/data.db'):
+    def get_copy_conn(self, connection_string_data = 'sqlite:///db/data.db', work_dir = None):
         if(self.id == None):
             print "Insert Attacker into table before calling get_copy_conn(). No copy made!"
             return None
-        return connection_string_data.replace('.db', '') + str(self.id) + '.db'
+        #use same folder as original
+        if(work_dir == None):
+            return connection_string_data.replace('.db', '') + str(self.id) + '.db'
+        split = connection_string_data.split('/')
+        return 'sqlite:///' + work_dir + '/' + split[-1].replace('.db', '') + str(self.id) + '.db'
     
     
     """ Connects to or creates the attacker database and its attacker table and gives back a session

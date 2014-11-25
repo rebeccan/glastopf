@@ -13,7 +13,7 @@ Its differece to Glastopf is another approach of SQL injection emulation...
 
 GLASTOPF
 --------
-<https://github.com/glastopf/glastopf>
+https://github.com/glastopf/glastopf
 
 
 INSTALL
