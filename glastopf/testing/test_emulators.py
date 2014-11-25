@@ -295,12 +295,12 @@ class TestEmulatorIntegration(unittest.TestCase):
         #start attack
         event = attack.AttackEvent()
         event.source_addr = "127.0.0.1"
-        event.http_request = HTTPHandler('GET /login.php?login=bla&password=bla HTTP/1.0', None)
+        event.http_request = HTTPHandler('GET /login.php?login=wrong&password=wrong HTTP/1.0', None)
         event.matched_pattern = "sqlinjectable"
         request_handler = RequestHandler(self.data_dir)
         emulator = request_handler.get_handler(event.matched_pattern)
         emulator.handle(event, attackerdb_session, data_connection_string, self.work_dir)
-        #self.assertTrue("Wrong username or password." in event.http_request.get_response())
+        self.assertTrue("Wrong username or password." in event.http_request.get_response())
         # clean up
         attackerdb_session.close()
 

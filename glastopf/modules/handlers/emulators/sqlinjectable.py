@@ -20,7 +20,7 @@ from glastopf.modules.handlers import base_emulator
 from glastopf.modules.attacker.attacker import Attacker
 from glastopf.modules.injectable.db_copy import DB_copy
 from glastopf.modules.injectable.user import User
-from glastopf.modules.injectable.queries import Mappings
+from glastopf.modules.injectable.injection import Injection
 
 
 class SQLinjectableEmulator(base_emulator.BaseEmulator):
@@ -45,8 +45,8 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         copy.create_copy()
         datadb_session_copy = User.connect(copy_connection_string)
         #inject, form response
-        mappings = Mappings()
-        payload = mappings.getResponseForRequ(attack_event, datadb_session_copy)
+        injection = Injection(attack_event, datadb_session_copy)
+        payload = injection.getResponse()
         attack_event.http_request.set_response(payload)
         #close db connections
         #attackerdb_session.close() # <-- TODO RN: when to close this?
