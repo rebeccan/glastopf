@@ -122,6 +122,9 @@ class GlastopfHoneypot(object):
         logger.info('Stopping Glastopf.')
         self.dork_generator.enabled = False
         self.workers_enabled = False
+        #stop resources
+        self.attackerdb.close()
+        
 
     def post_processer(self):
         while self.workers_enabled:

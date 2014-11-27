@@ -49,7 +49,6 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         payload = injection.getResponse()
         attack_event.http_request.set_response(payload)
         #close db connections
-        #attackerdb_session.close() # <-- TODO RN: when to close this?
         datadb_session_copy.close()
 
 

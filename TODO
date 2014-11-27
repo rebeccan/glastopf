@@ -5,6 +5,8 @@ IMPLEMENTATION TODOs
     problem: SQLinjectableEmulator is only ran, when classified as sqlinjectable
     -> looks weired when an attacker tries to login normally
     "/comments", "?login=bla&password=bla
+    
+- embedd response from sqlinjectable handler in fancy website
 
 - add intelligent identification columns to attacker database
 
