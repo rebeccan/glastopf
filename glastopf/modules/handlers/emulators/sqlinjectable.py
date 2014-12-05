@@ -17,10 +17,11 @@
 
 
 from glastopf.modules.handlers import base_emulator
-from glastopf.modules.attacker.attacker import Attacker
+from glastopf.modules.fingerprinting.attacker import Attacker
 from glastopf.modules.injectable.db_copy import DB_copy
 from glastopf.modules.injectable.user import User
 from glastopf.modules.injectable.injection import Injection
+from glastopf.virtualization.docker_client import DockerClient
 
 
 class SQLinjectableEmulator(base_emulator.BaseEmulator):
@@ -37,6 +38,9 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         #attacker fingerprinting and insertion in attacker.db
         attacker = Attacker(str(attack_event.source_addr[0]))
         attacker = Attacker.insert_unique(attackerdb_session, attacker)
+        
+        docker_client = DockerClient()
+        
         #get dataxx.db for attacker xx, make copy if not present yet
         if(work_dir == None):
             copy_connection_string = attacker.get_copy_conn(connection_string_data)

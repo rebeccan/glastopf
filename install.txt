@@ -1,0 +1,60 @@
+GlastopfInjectable Installation Steps on Ubuntu 14.04.1 LTS 64 Bit
+------------------------------------------------------------------
+
+Note: Host machine needs to be a 64 Bit machine because GlastopfInjectable uses Docker, which only works on that
+
+
+- install Glastopf Prerequisites (https://github.com/glastopf/glastopf/blob/master/docs/source/installation/installation_ubuntu.rst):
+	sudo apt-get update
+	sudo apt-get install python2.7 python-openssl python-gevent libevent-dev python2.7-dev build-essential make
+	sudo apt-get install python-chardet python-requests python-sqlalchemy python-lxml
+	sudo apt-get install python-beautifulsoup mongodb python-pip python-dev python-setuptools
+	sudo apt-get install g++ git php5 php5-dev liblapack-dev gfortran libmysqlclient-dev
+	sudo apt-get install libxml2-dev libxslt-dev
+	sudo pip install --upgrade distribute
+	
+- Sandbox (https://github.com/glastopf/glastopf/blob/master/docs/source/installation/installation_ubuntu.rst):
+	cd /opt
+	sudo git clone git://github.com/glastopf/BFR.git
+	cd BFR
+	sudo phpize
+	sudo ./configure --enable-bfr
+	sudo make && sudo make install
+	sudo gedit /etc/php5/apache2/php.ini
+	    add line: zend_extension = /usr/lib/php5/20090626+lfs/bfr.so
+		
+- get glastopfInjectable code from repository
+	sudo mkdir /opt/glastopf
+        cd /opt/glastopf
+	sudo git clone https://github.com/rebeccan/glastopf.git
+
+- install GlastopfInjectable Prerequisites:
+	Docker:
+		sudo apt-get update
+		sudo apt-get install docker.io
+		source /etc/bash_completion.d/docker.io
+		start docker to see if works:
+			sudo docker run -i -t ubuntu /bin/bash
+
+- Get rid of python-pip bug in Ubuntu 14.01.4 before Glastopf installation (https://github.com/glastopf/glastopf/issues/200#issuecomment-59065414):
+	sudo rm -rf /usr/local/lib/python2.7/dist-packages/distribute-0.7.3-py2.7.egg-info/
+	sudo rm -rf /usr/local/lib/python2.7/dist-packages/setuptools*
+	wget https://pypi.python.org/packages/source/d/distribute/distribute-0.6.35.tar.gz
+	tar -xzvf distribute-0.6.35.tar.gz
+	cd distribute-0.6.35
+	python setup.py install
+		
+- GlastopfInjectable installation 
+	in development mode:
+		sudo python setup.py develop
+	normal:
+		sudo python setup.py install
+                
+- install docker image and container needed for GlastopfInjectable virtualization
+        sudo python setup_docker.py
+	
+- run Glastopf
+	sudo glastopf-runner
+
+- see webpage in browser
+	http://127.0.0.1:8181/

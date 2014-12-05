@@ -35,7 +35,7 @@ import modules.HTTP.method_handler as method_handler
 import modules.events.attack as attack
 from modules.handlers.request_handler import RequestHandler
 from modules import logging_handler, vdocs
-from modules.attacker.attacker import Attacker
+from modules.fingerprinting.attacker import Attacker
 from modules.injectable.user import User
 from modules.injectable.comment import Comment
 import shutil
@@ -49,6 +49,7 @@ from modules.handlers.emulators.dork_list import mnem_service
 from modules.reporting.main import log_mongodb, log_sql
 from subprocess import check_call
 from sqlalchemy import create_engine
+from virtualization import docker
 
 
 logger = logging.getLogger(__name__)
@@ -98,6 +99,9 @@ class GlastopfHoneypot(object):
         #used for post processing (logging and analysis) of attack events
         self.post_queue = Queue.Queue()
         self.workers_enabled = False
+        
+        #start container for virualization before glastopf drops priviledges
+        docker.start()
 
     def start_background_workers(self):
         """

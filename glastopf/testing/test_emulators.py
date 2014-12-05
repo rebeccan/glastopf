@@ -28,7 +28,7 @@ from glastopf.modules.handlers.request_handler import RequestHandler
 from glastopf.glastopf import GlastopfHoneypot
 import glastopf.modules.events.attack as attack
 from glastopf.modules.HTTP.handler import HTTPHandler
-from glastopf.modules.attacker.attacker import Attacker
+from glastopf.modules.fingerprinting.attacker import Attacker
 
 class TestEmulatorIntegration(unittest.TestCase):
     """Tests the honeypots request emulation modules.

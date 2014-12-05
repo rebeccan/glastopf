@@ -1,8 +1,5 @@
-GlastopfInjectable |Build Status|
-=======================
-
-.. |Build Status| image:: https://travis-ci.org/glastopf/glastopf.png?branch=master
-                       :target: https://travis-ci.org/glastopf/glastopf
+GlastopfInjectable
+==================
 
 ABOUT
 -----
@@ -18,4 +15,6 @@ https://github.com/glastopf/glastopf
 
 INSTALL
 -------
-Install instruction can be found on `here <https://github.com/glastopf/glastopf/tree/master/docs/source/installation>`_.
+Install instruction for Glastopf can be found on `here <https://github.com/glastopf/glastopf/tree/master/docs/source/installation>`_.
+
+Install instructions for GlastopfInjectable can be found in install.txt

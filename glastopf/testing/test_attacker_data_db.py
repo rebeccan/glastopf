@@ -26,7 +26,7 @@ from sqlalchemy import Sequence
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from modules.attacker.attacker import Attacker
+from modules.fingerprinting.attacker import Attacker
 from modules.injectable.db_copy import DB_copy
 from modules.injectable.user import User
 
