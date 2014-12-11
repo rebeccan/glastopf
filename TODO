@@ -1,6 +1,10 @@
 IMPLEMENTATION TODOs
 --------------------
 
+- rewrite tests according to modified implementation
+
+- docker_server.py needs to be hardened, no access from outside! only host to container access.
+
 - improve classification in requests.xml
     problem: SQLinjectableEmulator is only ran, when classified as sqlinjectable
     -> looks weired when an attacker tries to login normally
@@ -9,10 +13,6 @@ IMPLEMENTATION TODOs
 - embedd response from sqlinjectable handler in fancy website
 
 - add intelligent identification columns to attacker database
-
-- close connections in the end (e.g. attackerdb_session)
-
-- let copy-data-dbs only run in a sandbox (Dionaea?)
 
 - use comments table instead of comments.txt 
 
@@ -33,9 +33,15 @@ IMPLEMENTATION TODOs
 IMPLEMENTATION IN PROGRESS
 --------------------------
 
-- map user injected values to useful queries to comments and users tables
+- "connection_string_data" from configuration -> do something useful or delete
 
-- write test for SQLinjectableEmulator
+- let injection only run in docker container
+    * image & container
+    * dockerfile
+    * dockerclient & dockerserver
+    * localclient
+
+- map user injected values to useful queries to comments and users tables
 
 - Fix:
         python -m unittest discover -s testing -p 'test_emulators.py'
@@ -48,6 +54,10 @@ IMPLEMENTATION IN PROGRESS
 
 IMPLEMENTATION DONEs
 --------------------
+
+- write test for SQLinjectableEmulator
+
+- close connections in the end (e.g. attackerdb_session)
 
 - add sqlite datasbase: attacker.db
     Mapping Attacker class to attacker table

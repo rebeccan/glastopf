@@ -16,16 +16,53 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
+import SocketServer
 
-class DockerServer(object):
+from glastopf.modules.injectable.db_copy import DB_copy
+from glastopf.modules.injectable.user import User
+from glastopf.modules.injectable.injection import Injection
+
+#TODO: SocketServer handles requests synchronously
+# -> implement threading with workers
+class DockerServer(SocketServer.StreamRequestHandler):
     
-    def __init__(self):
-        print "Here runs a docker server!"
+    """
+    reads 2 from connections (one with database name, one with query string)
+    and answers with line, containing the response from the db
+    """
+    def handle(self):
+        db_name = self.rfile.readline().strip()
+        query = self.rfile.readline()
+        print "{} wrote:".format(self.client_address[0])
+        print db_name
+        print query
+        response = self.handle_query(db_name, query)
+        print response
+        self.wfile.writeline(reponse)
+        self.wfile.flush()
+            
+            
+
+    def handle_query(self, db_name, query):
+        #create copy
+        copy = DB_copy(db_name).create_copy()
+        #create session
+        conn_str = copy.get_db_copy_conn_str()
+        session = User.connect(conn_str)
+        #make injection
+        injectionResult = User.injection(session, query)
+        #close db connection
+        #session.close()
+        return injectionResult
 
 
+"""runs the docker_server"""
 def main():
-    """runs the docker_server"""
-    DockerServer()
+    HOST, PORT = "localhost", 3066
+
+    server = SocketServer.TCPServer((HOST, PORT), DockerServer)
+
+    server.serve_forever()
     
 
 if __name__ == "__main__":

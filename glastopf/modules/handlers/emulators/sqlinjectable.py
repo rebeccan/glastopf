@@ -18,9 +18,8 @@
 
 from glastopf.modules.handlers import base_emulator
 from glastopf.modules.fingerprinting.attacker import Attacker
-from glastopf.modules.injectable.db_copy import DB_copy
-from glastopf.modules.injectable.user import User
 from glastopf.modules.injectable.injection import Injection
+from glastopf.modules.injectable.local_client import LocalClient
 from glastopf.virtualization.docker_client import DockerClient
 
 
@@ -32,27 +31,18 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
     def __init__(self, data_dir):
         super(SQLinjectableEmulator, self).__init__(data_dir)
 
-    def handle(self, attack_event, attackerdb_session, connection_string_data, work_dir = None):
+    def handle(self, attack_event, attackerdb_session, connection_string_data):
         payload = "Payload generated from SQLinjectableEmulator"
         value = ""
         #attacker fingerprinting and insertion in attacker.db
         attacker = Attacker(str(attack_event.source_addr[0]))
         attacker = Attacker.insert_unique(attackerdb_session, attacker)
+        db_name = attacker.get_db_name()
         
-        docker_client = DockerClient()
-        
-        #get dataxx.db for attacker xx, make copy if not present yet
-        if(work_dir == None):
-            copy_connection_string = attacker.get_copy_conn(connection_string_data)
-        else: copy_connection_string = attacker.get_copy_conn(connection_string_data, work_dir)
-        copy = DB_copy(connection_string_data, copy_connection_string)
-        copy.create_copy()
-        datadb_session_copy = User.connect(copy_connection_string)
         #inject, form response
-        injection = Injection(attack_event, datadb_session_copy)
+        injection = Injection(LocalClient(), attack_event, db_name)
         payload = injection.getResponse()
+        
         attack_event.http_request.set_response(payload)
-        #close db connections
-        datadb_session_copy.close()
 
 

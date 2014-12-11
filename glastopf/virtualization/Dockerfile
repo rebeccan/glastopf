@@ -20,11 +20,12 @@ EXPOSE 3066
 
 #copy original data.db
 #copy docker-server.py
-ADD docker_server.py /glastopf/
+#ADD docker_server.py /glastopf/
+ADD temp /glastopf/
 
 # Set the default directory where CMD will execute
 WORKDIR /glastopf
 
 # Set the default command to execute
 # when creating a new container
-CMD ["python", "docker_server.py"]
+CMD ["python", "/glastopf/virtualization/docker_server.py"]

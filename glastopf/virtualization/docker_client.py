@@ -15,24 +15,34 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import socket
+import sys
 
 class DockerClient(object):
     
     def __init__(self):
-        ##client = Client(base_url='tcp://127.0.0.1:2375')
-        ##instantiate Client object
-        #client = Client(base_url='unix://var/run/docker.sock')
-        ##create image from Dockerfile
-        ##response = client.build(path='/opt/glastopf/glastopf/virtualization', tag='sqlsandbox_image') #TODO RN: remove hardcoded path
-        #response = client.build('.', 'sqlsandbox_image')
-        #print response
-        #container = client.create_container(image = 'sqlsandbox_image', name='sqlsandbox_container', ports=[(1337, 'tcp')])
-        #client.start(container=container.get('Id'), port_bindings={1337: ('0.0.0.0', 1338)})
-        return
-    
+        self.HOST, self.PORT = "localhost", 3066
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
+        
+    def manage_injection(self, db_name = "", query = ""):
+        try:
+            # Connect to server and send data
+            self.sock.connect((self.HOST, self.PORT))
+            self.sock.sendall(db_name + "\n")
+            self.sock.sendall(query + "\n")
+            # Receive data from the server and shut down
+            rfile = self.sock.makefile(mode = 'rb')
+            response = rfile.readline()
+        finally:
+            self.sock.close()
+        return response
 
+   
+"""runs the docker_client for testing"""
+def main():
+    client = DockerClient()
+    client.manage_injection("data2.db", "select * from users")
     
-    
-    
-    
-    
+if __name__ == "__main__":
+    sys.exit(main())    

@@ -18,30 +18,67 @@
 import shutil
 import os.path
 
-class DB_copy():
-    """
-    Offers methods for copying the original database
-    """
-    connection_string_original = None
+"""
+Offers methods for copying the original database
+"""
+
+class DB_copy(object):
     
-    def __init__(self, connection_string_original, connection_string_copy):
-        if not DB_copy.connection_string_original:
-            DB_copy.connection_string_original = str(connection_string_original)
-        self.connection_string_copy = str(connection_string_copy)
+    """
+    db_copy_name is the name of the attacker-data db
+    """
+    def __init__(self, db_copy_name, db_orig_name = 'data.db', work_dir = 'db'):
+        self.db_copy_name = db_copy_name
+        self.db_orig_name = db_orig_name
+        self.work_dir = work_dir
+        
     
-    """make a copy of the original database"""
+    """create a copy of the original database
+    does not overwrite a file, if already there"""
     def create_copy(self):
-        #transform the connection string to a path string
-        # e.g. src "sqlite:///db/data.db" to "/db/data.db"
-        # e.g. dst "sqlite:///db/data123.db" to "/db/data123.db"
-        src = str(DB_copy.connection_string_original).replace('sqlite:///', '')
-        print 'cut src: ' + src
-        dst = str(self.connection_string_copy).replace('sqlite:///', '')
-        print 'cut dst: ' + dst
+        src = self.get_db_orig_path()
+        print 'src: ' + src
+        dst = self.get_db_copy_path()
+        print 'dst: ' + dst
         if os.path.isfile(dst):
             print 'destination file ' + dst + ' already exists. No copy made!'
             return False
         shutil.copyfile(src, dst)
         return True
         
+        
+    """
+    returns the path to the copy db file
+    e.g. "/db/data123.db"
+    """
+    def get_db_copy_path(self):
+        return os.path.join(self.work_dir, self.db_copy_name)
+    
+    """
+    returns the path to the original db file
+    e.g. "/db/data.db"
+    """
+    def get_db_orig_path(self):
+        return os.path.join(self.work_dir, self.db_orig_name)
+    
+    """
+    returns the sqlite connection string to the original db
+    e.g. "sqlite:///db/data.db"
+    """
+    def get_db_orig_conn_str(self):
+        if(os.path.isabs(self.work_dir)):
+            return "sqlite:////" + self.get_db_orig_path()
+        else:
+            return "sqlite:///" + self.get_db_orig_path()
+    
+    """
+    returns the sqlite connection string to the original db
+    e.g. "sqlite:///db/data123.db"
+    """
+    def get_db_copy_conn_str(self):
+        if(os.path.isabs(self.work_dir)):
+            return "sqlite:////" + self.get_db_copy_path()
+        else:
+            return "sqlite:///" + self.get_db_copy_path()
+    
     

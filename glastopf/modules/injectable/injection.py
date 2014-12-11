@@ -15,8 +15,9 @@
 # Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from glastopf.modules.injectable.user import User
-from glastopf.modules.injectable.comment import Comment
+
+from glastopf.modules.injectable.local_client import LocalClient
+from glastopf.virtualization.docker_client import DockerClient
 
 from xml.etree import ElementTree
 import os
@@ -24,9 +25,10 @@ import os
 
 class Injection(object):
     
-    def __init__(self, attack_event, datadb_session_copy):
+    def __init__(self, client, attack_event, db_name):
+        self.client = client
         self.attack_event = attack_event
-        self.session = datadb_session_copy
+        self.db_name = db_name
         #variables for mapping tainted variables to database query
         self.login = None
         self.password = None
@@ -60,7 +62,7 @@ class Injection(object):
         if(login is not None and password is not None):
             #query
             query = "SELECT * FROM users WHERE email = '" + login + "' AND password = '" + password + "'"
-            injectionResult = User.injection(self.session, query)
+            injectionResult = self.client.manage_injection(self.db_name, query)
             #response
             empty = True
             for row in injectionResult:
@@ -76,7 +78,7 @@ class Injection(object):
         if(comment is not None):
             #query
             query = "INSERT INTO comments (comment) VALUES ('" + comment + "');"
-            injectionResult = Comment.injection(self.session, query)
+            injectionResult = self.client.manage_injection(self.db_name, query)
             #response
             payload = payload + "Comment inserted successfully."
             
