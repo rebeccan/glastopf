@@ -19,12 +19,11 @@ import shutil
 import os
 import subprocess
 
-def start_container():
-    #start container
-    subprocess.call(["sudo", "docker", "start", "glastopfinjectable_dbserver_container"])
-        
-    
+
 def setup_docker(image = True, container = True):
+    #cleanup before docker setup
+    #cleanup_untagged_images()
+    remove_container()
     
     #TODO RN: create temporary folder under virtualization with all needed glastopf files
     #needed: injectable folder, data.db,
@@ -38,14 +37,17 @@ def setup_docker(image = True, container = True):
         print src + " -> " + dst
         os.mkdir(temp_dir + "db")
         shutil.copyfile(src, dst)
-        src = base_dir + "/glastopf/modules/injectable/"
-        dst = temp_dir + "glastopf/modules/injectable/"
+        #src = base_dir + "/glastopf/modules/injectable/"
+        #dst = temp_dir + "glastopf/modules/injectable/"
+        src = base_dir + "/glastopf/"
+        dst = temp_dir + "glastopf/"
         print src + " -> " + dst
-        shutil.copytree(src, temp_dir + "/glastopf/modules/injectable/")
+        #shutil.copytree(src, dst)
+        shutil.copytree(src, dst, ignore=ignore_temp)
         src = base_dir + "/glastopf/virtualization/docker_server.py"
-        dst = temp_dir + "glastopf/virtualization/docker_server.py"
+        dst = temp_dir + "docker_server.py"
         print src + " -> " + dst
-        os.mkdir(temp_dir + "glastopf/virtualization")
+        #os.mkdir(temp_dir + "glastopf/virtualization")
         shutil.copyfile(src, dst)
         
         error = False
@@ -55,35 +57,55 @@ def setup_docker(image = True, container = True):
             error = subprocess.call(["sudo", "docker", "build", "-t", "glastopfinjectable_dbserver_img", "glastopf/virtualization"])
             #create container
             if(error):
-                print "image not successfully built. container not created."
+                print "image not successfully built. container will not be created from image."
         #create container
         if(container and not error):
-            #sudo docker run --name my_application_instance -P -i -t my_application_img
-            error = subprocess.call(["sudo", "docker", "run", "--name", "glastopfinjectable_dbserver_container", "-P", "-i", "-t", "glastopfinjectable_dbserver_img"])
+            #create container and run it
+            #make container accessible from docker host machine only with 127.0.0.1 configuration over port 49153
+            error = subprocess.call(["sudo", "docker", "run", "-p", "127.0.0.1:49153:49153", "-i", "-t", "--name", "glastopfinjectable_dbserver_container", "glastopfinjectable_dbserver_img"])
             if(error):
                 print "container not successfully created"
-    finally:        
-        #TODO RN: delete temporary folder
+            stop()
+    finally:
         if os.path.isdir(temp_dir):
             shutil.rmtree(temp_dir)
         
 
 
+def ignore_temp(src_path,content):
+    if ('temp' in content):
+        return 'temp'
+        #Here when test folder found it will passed 
+        #to ignore list
+    else:
+        return []
+    
+    
  
 """
-remove all untagged images
+remove all untagged images, remove all containers
 """
-def cleanup_images():
-    subprocess.call(["sudo", "docker", "rmi" "$(sudo docker images | grep \"^<none>\" | awk \"{print $3}\")"])
+def cleanup_untagged_images():
+    print "cleanup untagged images"
+    #sudo docker rmi $(sudo docker images -f "dangling=true" -q)
+    subprocess.call(["sudo", "docker", "rmi " "$(sudo docker images | grep \"^<none>\" | awk \"{print $3}\")"])
+    
+def remove_all_containers():
+    subprocess.call(["sudo", "docker", "rm", "-f", "$(sudo docker ps -a -q)"])
+    
+def remove_container():
+    print "remove glastopfinjectable_dbserver_container"
+    subprocess.call(["sudo", "docker", "rm", "-f", "glastopfinjectable_dbserver_container"])
 
 """
-starts the docker container
+starts or restarts the docker container
 """
 def start():
     print "start container"
-    subprocess.call(["sudo", "docker", "start", "-a", "glastopfinjectable_dbserver_container"])
+    subprocess.call(["sudo", "docker", "-p", "127.0.0.1:49153:49153", "restart", "glastopfinjectable_dbserver_container"])
+
 
 def stop():
     print "stop container"
-    subprocess.call(["docker", "stop", "glastopfinjectable_dbserver_container"])
+    subprocess.call(["sudo" "docker", "stop", "glastopfinjectable_dbserver_container"])
 

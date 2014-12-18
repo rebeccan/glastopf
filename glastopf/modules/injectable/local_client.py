@@ -18,6 +18,8 @@
 from glastopf.modules.injectable.user import User
 from glastopf.modules.injectable.db_copy import DB_copy
 
+import ast
+
 class LocalClient(object):
     
     def __init__(self):
@@ -32,14 +34,14 @@ class LocalClient(object):
         session = User.connect(conn_str)
         #make injection
         injectionResult = User.injection(session, query)
-        #TODO RN: close db connection (cannot be closed as long Injection reads rows)
-        #session.close()
-        return injectionResult
-
+        session.close()
+        rows = []
+        for row in injectionResult:
+            rows.append(LocalClient.deserialze_row(row))
+        return rows
     
-def row2dict(row):
-    d = {}
-    for column in row.__table__.columns:
-        d[column.name] = str(getattr(row, column.name))
-
-    return d
+    
+    @staticmethod
+    def deserialze_row(row):
+        d = ast.literal_eval(row)
+        return d

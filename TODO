@@ -29,18 +29,11 @@ IMPLEMENTATION TODOs
     
 - sqlalchemy sessions and concurrency?
 
-
-IMPLEMENTATION IN PROGRESS
---------------------------
-
 - "connection_string_data" from configuration -> do something useful or delete
 
-- let injection only run in docker container
-    * image & container
-    * dockerfile
-    * dockerclient & dockerserver
-    * localclient
-
+- Check chronological order of: data.db creation and docker_setup, which copies data.db
+    does it exist if glastopf never ran before?
+    
 - map user injected values to useful queries to comments and users tables
 
 - Fix:
@@ -50,6 +43,27 @@ IMPLEMENTATION IN PROGRESS
         ImportError: No module named __init__
 
 
+IMPLEMENTATION IN PROGRESS
+--------------------------
+
+
+- let injection only run in docker container
+    * image & container
+    * dockerfile
+    * dockerclient & dockerserver
+    * localclient
+    * docker_setup stuff
+        + find out how to open NEW terminal for dockercontainer stdout
+        + copy needed python files only in docker container
+    * cleaning VMs or DBs
+    * stop docker container throws error
+
+- clean:
+    * renew whole VM
+    * specific db inside VM
+    * specific db outside VM?
+    * nontagged docker images
+    * container and untagged images before docker_setup
 
 
 IMPLEMENTATION DONEs

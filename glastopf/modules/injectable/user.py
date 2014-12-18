@@ -42,6 +42,7 @@ class User(Base):
     def __repr__(self):
         return "<User('%s')('%s')>" % (self.email, self.password)
     
+    
     @staticmethod
     def connect(connection_string):
         engine = create_engine(connection_string)
@@ -52,6 +53,21 @@ class User(Base):
     @staticmethod
     def injection(session, query):
         result = session.execute(query)
-        return result
+        return User.serialize_rows(result)
     
     
+    @staticmethod
+    def serialize_rows(rows):
+        l = []
+        for row in rows:
+            l.append(repr(User.row2dict(row)))
+        return l
+   
+    @staticmethod
+    def row2dict(row):
+        d = {}
+        d['id'] = str(row.id)
+        d['email'] = str(row.email)
+        d['password'] = str(row.password)
+        return d
+

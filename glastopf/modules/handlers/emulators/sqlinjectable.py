@@ -40,7 +40,7 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         db_name = attacker.get_db_name()
         
         #inject, form response
-        injection = Injection(LocalClient(), attack_event, db_name)
+        injection = Injection(DockerClient(), attack_event, db_name)
         payload = injection.getResponse()
         
         attack_event.http_request.set_response(payload)

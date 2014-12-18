@@ -16,19 +16,22 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
+import os
+import os.path
 import SocketServer
 
 from glastopf.modules.injectable.db_copy import DB_copy
 from glastopf.modules.injectable.user import User
 from glastopf.modules.injectable.injection import Injection
 
-#TODO: SocketServer handles requests synchronously
+#TODO RN: SocketServer handles requests synchronously
 # -> implement threading with workers
+"DockerServer is running on Docker container. It receives and handles requests from DockerClient Glastopf host."
 class DockerServer(SocketServer.StreamRequestHandler):
     
     """
-    reads 2 from connections (one with database name, one with query string)
-    and answers with line, containing the response from the db
+    reads 2 lines from connections (one with database name, one with query string)
+    and answers with lines, containing the response from the db
     """
     def handle(self):
         db_name = self.rfile.readline().strip()
@@ -36,30 +39,35 @@ class DockerServer(SocketServer.StreamRequestHandler):
         print "{} wrote:".format(self.client_address[0])
         print db_name
         print query
-        response = self.handle_query(db_name, query)
-        print response
-        self.wfile.writeline(reponse)
+        result = self.handle_query(db_name, query)
+        for r in result:
+            self.wfile.write(str(r) + "\n")
+            self.wfile.flush()
+        self.wfile.write("\n")
         self.wfile.flush()
-            
             
 
     def handle_query(self, db_name, query):
         #create copy
-        copy = DB_copy(db_name).create_copy()
+        db_dir = os.getcwd() + '/db'
+        copy = DB_copy(db_name, work_dir = db_dir)
+        copy.create_copy()
         #create session
         conn_str = copy.get_db_copy_conn_str()
         session = User.connect(conn_str)
         #make injection
         injectionResult = User.injection(session, query)
         #close db connection
-        #session.close()
+        session.close()
         return injectionResult
 
 
 """runs the docker_server"""
 def main():
-    HOST, PORT = "localhost", 3066
-
+    HOST, PORT = "0.0.0.0", 49153
+    
+    print "start docker_server on host " + str(HOST) + " port " + str(PORT)
+    
     server = SocketServer.TCPServer((HOST, PORT), DockerServer)
 
     server.serve_forever()

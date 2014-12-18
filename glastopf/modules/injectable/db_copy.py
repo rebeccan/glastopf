@@ -17,6 +17,7 @@
 
 import shutil
 import os.path
+import os
 
 """
 Offers methods for copying the original database
@@ -52,14 +53,20 @@ class DB_copy(object):
     e.g. "/db/data123.db"
     """
     def get_db_copy_path(self):
-        return os.path.join(self.work_dir, self.db_copy_name)
+        join = os.path.join(self.work_dir, self.db_copy_name)
+        if(os.path.isabs(join)):
+            return join
+        else: return os.path.abspath(join)
     
     """
     returns the path to the original db file
     e.g. "/db/data.db"
     """
     def get_db_orig_path(self):
-        return os.path.join(self.work_dir, self.db_orig_name)
+        join = os.path.join(self.work_dir, self.db_orig_name)
+        if(os.path.isabs(join)):
+            return join
+        else: return os.path.abspath(join)
     
     """
     returns the sqlite connection string to the original db

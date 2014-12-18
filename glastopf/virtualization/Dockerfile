@@ -15,8 +15,8 @@ RUN sudo apt-get install -y python-beautifulsoup mongodb python-pip python-dev p
 RUN sudo apt-get install -y g++ git php5 php5-dev liblapack-dev gfortran libmysqlclient-dev
 RUN sudo apt-get install -y libxml2-dev libxslt-dev
 
-#open port 3066
-EXPOSE 3066
+#open port 49153
+EXPOSE 49153
 
 #copy original data.db
 #copy docker-server.py
@@ -28,4 +28,5 @@ WORKDIR /glastopf
 
 # Set the default command to execute
 # when creating a new container
-CMD ["python", "/glastopf/virtualization/docker_server.py"]
+CMD ["python", "docker_server.py"]
+#CMD ["/bin/bash", "-c", "python docker_server.py"]

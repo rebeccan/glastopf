@@ -17,11 +17,13 @@
 
 import socket
 import sys
+import ast
 
+"DockerClient makes requests from Glastopf host to the DockerServer running on Docker container"
 class DockerClient(object):
     
     def __init__(self):
-        self.HOST, self.PORT = "localhost", 3066
+        self.HOST, self.PORT = "127.0.0.1", 49153
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         
@@ -33,10 +35,21 @@ class DockerClient(object):
             self.sock.sendall(query + "\n")
             # Receive data from the server and shut down
             rfile = self.sock.makefile(mode = 'rb')
-            response = rfile.readline()
+            rows = []
+            response = str(rfile.readline())
+            while(response is not "" and not response.isspace()):
+                print response
+                rows.append(DockerClient.deserialze_row(response))
+                response = rfile.readline()
         finally:
             self.sock.close()
-        return response
+        return rows
+    
+    
+    @staticmethod
+    def deserialze_row(row):
+        d = ast.literal_eval(row)
+        return d
 
    
 """runs the docker_client for testing"""
