@@ -40,3 +40,17 @@ class AttackEvent(object):
             "filename": self.file_name,
         }
         return event_dict
+    
+    '''
+    Returns the value of the header_field in a HTTP header
+    Paramter: the name of the header field
+    '''
+    def get_header_value(self, header_field):
+        for h in self.raw_request.splitlines():
+            if ":" in h:
+                h, v = h.split(":", 1)
+                if(str(h.strip().lower()) == header_field.lower()):
+                    return str(v.strip())
+            if(h == "\r\n"):
+                break
+        return ''

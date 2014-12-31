@@ -128,7 +128,8 @@ class GlastopfHoneypot(object):
         self.workers_enabled = False
         #stop resources
         self.attackerdb.close()
-        docker.stop()
+        #TODO RN: stopf docker container, rights mgmt
+        #docker.stop()
         
 
     def post_processer(self):

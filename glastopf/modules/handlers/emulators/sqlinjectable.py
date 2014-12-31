@@ -22,6 +22,11 @@ from glastopf.modules.injectable.injection import Injection
 from glastopf.modules.injectable.local_client import LocalClient
 from glastopf.virtualization.docker_client import DockerClient
 
+#import os
+#from random import choice
+#import codecs
+#from urlparse import parse_qs
+#from string import Template
 
 class SQLinjectableEmulator(base_emulator.BaseEmulator):
     """Emulates a SQL injection vulnerability and a successful attack.
@@ -35,14 +40,26 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         payload = "Payload generated from SQLinjectableEmulator"
         value = ""
         #attacker fingerprinting and insertion in attacker.db
-        attacker = Attacker(str(attack_event.source_addr[0]))
+        attacker = Attacker.extract_attacker(attack_event)
         attacker = Attacker.insert_unique(attackerdb_session, attacker)
         db_name = attacker.get_db_name()
         
         #inject, form response
-        injection = Injection(DockerClient(), attack_event, db_name)
+        injection = Injection(LocalClient(), attack_event, db_name)
         payload = injection.getResponse()
         
         attack_event.http_request.set_response(payload)
+        
+        #TODO RN: embedd response in fancy website
+        #pages_dir = os.path.join(self.data_dir, 'dork_pages')
+        #dork_page_list = os.listdir(pages_dir)
+        #dork_page = choice(dork_page_list)
+        #with codecs.open(os.path.join(pages_dir, dork_page), "r", "utf-8") as dork_page:
+        #    login_msg = payload
+        #    with codecs.open(os.path.join(self.data_dir, 'comments.txt'), "r", "utf-8") as comments_txt:
+        #        template = Template(dork_page.read())
+        #        response = template.safe_substitute(
+        #            login_msg=login_msg)
+        #    attack_event.http_request.set_response(response)
 
 

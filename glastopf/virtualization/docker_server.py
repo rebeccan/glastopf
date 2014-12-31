@@ -22,7 +22,6 @@ import SocketServer
 
 from glastopf.modules.injectable.db_copy import DB_copy
 from glastopf.modules.injectable.user import User
-from glastopf.modules.injectable.injection import Injection
 
 #TODO RN: SocketServer handles requests synchronously
 # -> implement threading with workers

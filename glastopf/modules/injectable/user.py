@@ -59,9 +59,11 @@ class User(Base):
     @staticmethod
     def serialize_rows(rows):
         l = []
-        for row in rows:
-            l.append(repr(User.row2dict(row)))
-        return l
+        try:
+            for row in rows:
+                l.append(repr(User.row2dict(row)))
+        finally:
+            return l
    
     @staticmethod
     def row2dict(row):

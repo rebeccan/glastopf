@@ -122,11 +122,17 @@
     <patternString><![CDATA[.*/comments]]></patternString>
     <module>comments</module>
   </request>
-  <request>
+<!--  <request>
     <id>18</id>
     <patternDescription>login brute force</patternDescription>
     <patternString><![CDATA[^/login]]></patternString>
     <module>login</module>
+  </request>-->
+  <request>
+    <id>18</id>
+    <patternDescription>login brute force</patternDescription>
+    <patternString><![CDATA[^/login|.*(login|password).*]]></patternString>
+    <module>sqlinjectable</module>
   </request>
   <request>
     <id>19</id>

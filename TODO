@@ -1,27 +1,17 @@
 IMPLEMENTATION TODOs
 --------------------
 
-- rewrite tests according to modified implementation
-
-- docker_server.py needs to be hardened, no access from outside! only host to container access.
-
 - improve classification in requests.xml
     problem: SQLinjectableEmulator is only ran, when classified as sqlinjectable
     -> looks weired when an attacker tries to login normally
     "/comments", "?login=bla&password=bla
-    
-- embedd response from sqlinjectable handler in fancy website
-
-- add intelligent identification columns to attacker database
 
 - use comments table instead of comments.txt 
 
 - make input fields of GUI injectable
     (seems to be a longer task, as the body seems to be ingored completely)
 
-- configuration: user can choose emulators sqli and sqlintectable
-
-- relation attacker to ip_profile, inurl, etc...
+- configuration: user can choose between emulators sqli and sqlintectable
 
 - cleaning databases cron job:
     - add timestamp of latest_activity to attacker
@@ -36,16 +26,39 @@ IMPLEMENTATION TODOs
     
 - map user injected values to useful queries to comments and users tables
 
+- clean Docker stuff:
+    delete/rebuild specific db inside VM
+    
+- Docker:
+    find out how to open NEW terminal for dockercontainer stdout
+
 - Fix:
-        python -m unittest discover -s testing -p 'test_emulators.py'
-        -->
-        from __init__ import __version__
-        ImportError: No module named __init__
+        - python -m unittest discover -s testing -p 'test_emulators.py'
+            -->
+            from __init__ import __version__
+            ImportError: No module named __init__
+        
+        - Docker
+            stop docker container throws error
+            
+        - rewrite tests according to modified implementation
 
 
 IMPLEMENTATION IN PROGRESS
 --------------------------
 
+
+- embedd response from sqlinjectable handler in fancy website
+
+- check if ip-less attacker fingerprinting is really useful with browserless hacking (botnet, sqlmap)
+
+
+IMPLEMENTATION DONEs
+--------------------
+
+- implement intelligent attacker fingerprinting, which is not over ip address
+
+- docker_server.py no access from outside! only host to container access.
 
 - let injection only run in docker container
     * image & container
@@ -53,21 +66,12 @@ IMPLEMENTATION IN PROGRESS
     * dockerclient & dockerserver
     * localclient
     * docker_setup stuff
-        + find out how to open NEW terminal for dockercontainer stdout
-        + copy needed python files only in docker container
-    * cleaning VMs or DBs
-    * stop docker container throws error
+        + copy needed python files only into docker container
+    * error message if glastopf is started, before setup ran.
 
-- clean:
+- clean Docker stuff:
     * renew whole VM
-    * specific db inside VM
-    * specific db outside VM?
-    * nontagged docker images
     * container and untagged images before docker_setup
-
-
-IMPLEMENTATION DONEs
---------------------
 
 - write test for SQLinjectableEmulator
 

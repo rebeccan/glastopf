@@ -52,6 +52,9 @@ Note: Host machine needs to be a 64 Bit machine because GlastopfInjectable uses 
                 
 - install docker image and container needed for GlastopfInjectable virtualization
         sudo python setup_docker.py
+        Press Crtl-C to stop container execution, when you see
+            "Successfully built c68e66c8d137
+            start docker_server on host 0.0.0.0 port 49153"
 	
 - run Glastopf
 	sudo glastopf-runner

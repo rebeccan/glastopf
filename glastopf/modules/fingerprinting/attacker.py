@@ -31,13 +31,18 @@ class Attacker(Base):
     __tablename__ = 'attackers'
     id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
     ip = Column(String(50))
+    encoding = Column(String(200))
+    lang = Column(String(200))
+    agent = Column(String(200))
     
     #create attacker with ip address
-    def __init__(self,ip):
+    def __init__(self,ip ='', encoding='', lang='', agent=''):
         self.ip = str(ip)
+        self.encoding = str(encoding)
+        self.lang = str(lang)
+        self.agent = str(agent)
         #TODO RN: create fingerprint
         # e.g. passive fingerprinting with following stuff:
-            #HTTP_ACCEPT': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             #'HTTP_ACCEPT_ENCODING': 'gzip, deflate',
             #'HTTP_ACCEPT_LANGUAGE': 'de,en-US;q=0.7,en;q=0.3',
             #'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20100101 Firefox/33.0',
@@ -67,6 +72,16 @@ class Attacker(Base):
             return None
         return original_name.replace('.db', '') + str(self.id) + '.db'
     
+    @staticmethod
+    def extract_attacker(attack_event):
+        ip = str(attack_event.source_addr[0])
+        encoding = str(attack_event.get_header_value('Accept-Encoding'))
+        lang = str(attack_event.get_header_value('Accept-Language'))
+        agent = str(attack_event.get_header_value('User-Agent'))
+        print "extract_attacker in Fingerprinting module:  encoding: " + encoding + "lang: " + lang + "agent: " + agent
+        attacker = Attacker(ip = ip, encoding = encoding, lang = lang, agent = agent)
+        return attacker
+    
     
     """ Connects to or creates the attacker database and its attacker table and gives back a session
     parameter: path of the SQLite DB with the attacker table, e.g. "sqlite:///db/attacker.db"
@@ -95,7 +110,8 @@ class Attacker(Base):
     returns an attacker or none"""
     @staticmethod
     def find_equal(attackerdb_session, attacker):
-        attacker_list = attackerdb_session.query(Attacker).filter_by(ip=attacker.ip)
+        attacker_list = attackerdb_session.query(Attacker).filter_by(encoding=attacker.encoding,
+        lang = attacker.lang, agent = attacker.agent)
         if attacker_list.count() > 0:
             assert attacker_list.count() == 1
             return attacker_list[0]
