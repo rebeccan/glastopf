@@ -94,9 +94,9 @@ class Classifier(object):
         unquoted_url = urllib2.unquote(http_request.request_url)
         # SQLi early exit
         ret = self.sqli_c.classify(unquoted_url)
+        #TODO RN: sqli, if chosen
         if ret['sqli']:
-            return "sqli"
-        if ret['sqlinjectable']:
+            #return "sqli"
             return "sqlinjectable"
         for pattern in patterns:
             match = None
