@@ -42,6 +42,8 @@ IMPLEMENTATION TODOs
             stop docker container throws error
             
         - rewrite tests according to modified implementation
+        
+- implement MORE intelligent attacker fingerprinting, which is not only over HTTP headers (stupid)
 
 
 IMPLEMENTATION IN PROGRESS

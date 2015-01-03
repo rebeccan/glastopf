@@ -24,17 +24,31 @@
     <patternString><![CDATA[.*(<\?php).*]]></patternString>
     <module>unknown</module>
   </request>
-  <request>
+<!--    <request>
     <id>4</id>
     <patternDescription>SQL benchmark and sleep</patternDescription>
     <patternString><![CDATA[.*((select|;)\s+(benchmark|if|sleep)).*]]></patternString>
     <module>unknown</module>
+  </request> -->
+  <request>
+    <id>4</id>
+    <patternDescription>SQL benchmark and sleep</patternDescription>
+    <patternString><![CDATA[.*((select|;)\s+(benchmark|if|sleep)).*]]></patternString>
+    <module>sqlinjectable</module>
   </request>
+<!-- old sqli handler
+  TODO RN: let user choose in configuration
   <request>
     <id>5</id>
     <patternDescription>SQL injection</patternDescription>
     <patternString><![CDATA[.*(select|drop|update|union|insert|alter|declare|cast)( |\().*]]></patternString>
     <module>sqli</module>
+  </request> -->
+    <request>
+    <id>5</id>
+    <patternDescription>SQL injection</patternDescription>
+    <patternString><![CDATA[.*(select|drop|update|union|insert|alter|declare|cast)( |\().*]]></patternString>
+    <module>sqlinjectable</module>
   </request>
   <request>
     <id>6</id>
@@ -108,11 +122,17 @@
     <patternString><![CDATA[.*/comments]]></patternString>
     <module>comments</module>
   </request>
-<request>
+<!--  <request>
     <id>18</id>
     <patternDescription>login brute force</patternDescription>
     <patternString><![CDATA[^/login]]></patternString>
     <module>login</module>
+  </request>-->
+  <request>
+    <id>18</id>
+    <patternDescription>login brute force</patternDescription>
+    <patternString><![CDATA[^/login|.*(login|password).*]]></patternString>
+    <module>sqlinjectable</module>
   </request>
   <request>
     <id>19</id>

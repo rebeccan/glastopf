@@ -41,7 +41,7 @@ class Classifier(object):
     def __init__(self, data_dir=os.path.join(os.getcwd(), 'data')):
         # TODO: check if file exists
         #ugly but it works...
-        requests_file = os.path.join(package_directory, '../../requests.xml')
+        requests_file = os.path.join(package_directory, '../../requestsInjectable.xml')
         self.tree = parse(requests_file)
         self.server_files_path = os.path.join(data_dir, 'server_files')
         if not os.path.isdir(self.server_files_path):
@@ -93,10 +93,10 @@ class Classifier(object):
         matched_patterns = []
         unquoted_url = urllib2.unquote(http_request.request_url)
         # SQLi early exit
-        # TODO RN: keep early exit if not sqlinjectable
         ret = self.sqli_c.classify(unquoted_url)
         if ret['sqli']:
-            #return "sqli"
+            return "sqli"
+        if ret['sqlinjectable']:
             return "sqlinjectable"
         for pattern in patterns:
             match = None
