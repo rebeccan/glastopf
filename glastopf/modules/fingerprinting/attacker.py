@@ -35,18 +35,13 @@ class Attacker(Base):
     lang = Column(String(200))
     agent = Column(String(200))
     
-    #create attacker with ip address
+    #attacker with ip address and passive fingerprinting
     def __init__(self,ip ='', encoding='', lang='', agent=''):
         self.ip = str(ip)
-        self.encoding = str(encoding)
-        self.lang = str(lang)
-        self.agent = str(agent)
-        #TODO RN: create fingerprint
-        # e.g. passive fingerprinting with following stuff:
-            #'HTTP_ACCEPT_ENCODING': 'gzip, deflate',
-            #'HTTP_ACCEPT_LANGUAGE': 'de,en-US;q=0.7,en;q=0.3',
-            #'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20100101 Firefox/33.0',
-            
+        self.encoding = str(encoding) #'HTTP_ACCEPT_ENCODING': 'gzip, deflate'
+        self.lang = str(lang) #'HTTP_ACCEPT_LANGUAGE': 'de,en-US;q=0.7,en;q=0.3'
+        self.agent = str(agent) # 'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20100101 Firefox/33.0'
+        
     
     def __repr__(self):
         return "<Attacker('%s')>" % (self.ip)
@@ -106,11 +101,19 @@ class Attacker(Base):
         attackerdb_session.commit()
         return attacker
     
+    
     """finds the attacker in attacker-database equal to attacker-param
-    returns an attacker or none"""
+    returns an attacker or none
+    
+    Equal when ip AND encoding AND lang AND agent are same
+    ->
+        - differentiation of different attackers in the same subnet
+        - false differentiation of one user, using random IP headers
+        - false differentiation of one TOR user, changing the exit node frequently 
+    """
     @staticmethod
     def find_equal(attackerdb_session, attacker):
-        attacker_list = attackerdb_session.query(Attacker).filter_by(encoding=attacker.encoding,
+        attacker_list = attackerdb_session.query(Attacker).filter_by(ip = attacker.ip, encoding=attacker.encoding,
         lang = attacker.lang, agent = attacker.agent)
         if attacker_list.count() > 0:
             assert attacker_list.count() == 1

@@ -51,11 +51,10 @@ IMPLEMENTATION IN PROGRESS
 
 - embedd response from sqlinjectable handler in fancy website
 
-- check if ip-less attacker fingerprinting is really useful with browserless hacking (botnet, sqlmap)
-
-
 IMPLEMENTATION DONEs
 --------------------
+
+- check if ip-less attacker fingerprinting is really useful with browserless hacking (botnet, sqlmap)
 
 - Fix timing problem: docker_setup needs initial database, which is not there before glastopfs first run. 
 
