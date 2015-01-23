@@ -36,8 +36,6 @@ import modules.events.attack as attack
 from modules.handlers.request_handler import RequestHandler
 from modules import logging_handler, vdocs
 from modules.fingerprinting.attacker import Attacker
-from modules.injectable.user import User
-from modules.injectable.comment import Comment
 import shutil
 import modules.privileges as privileges
 #import modules.processing.profiler as profiler
@@ -50,7 +48,7 @@ from modules.reporting.main import log_mongodb, log_sql
 from subprocess import check_call
 from sqlalchemy import create_engine
 from virtualization import docker
-
+import seed
 
 logger = logging.getLogger(__name__)
 package_directory = os.path.dirname(os.path.abspath(__file__))
@@ -209,18 +207,7 @@ class GlastopfHoneypot(object):
     """
     def setup_data_database(self, conf_parser):
         connection_string_data = conf_parser.get("data-database", "connection_string_data")
-        #create databasefile and a row with dummy data, if file is not present yet
-        #TODO RN: more rows, filled with honeytokens
-        path_to_sqlitefile = str(connection_string_data).replace('sqlite:///', '')
-        if not os.path.isfile(path_to_sqlitefile):
-            logger.info("Setting up data database with path: {0}".format(connection_string_data))
-            sqla_engine = create_engine(connection_string_data)
-            datadb_session = User.connect(connection_string_data)
-            datadb_session.add(User('blub@example.com', 'blub'))
-            Comment.connect(connection_string_data)
-            datadb_session.add(Comment('This is a comment.'))
-            datadb_session.commit()
-            datadb_session.close()
+        seed.seed(connection_string_data)
         return connection_string_data
 
     @staticmethod
