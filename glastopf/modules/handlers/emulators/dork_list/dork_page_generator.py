@@ -86,8 +86,9 @@ class DorkPageGenerator(object):
         intext_list = self.database.get_dork_list('intext')
         intitle_list = self.database.get_dork_list('intitle')
 
-        # generate 5 dork pages
-        for count_new_pages in range(5):
+        # generate 1 dork page
+        #(,instead of 5 like before. improves sqlmap HTTP-response analyse.)
+        for count_new_pages in range(1):
             body = ''
             # each page has 150 dork links
             for i in range(0, 150):

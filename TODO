@@ -20,9 +20,6 @@ IMPLEMENTATION TODOs
 - sqlalchemy sessions and concurrency?
 
 - "connection_string_data" from configuration -> do something useful or delete
-
-- Check chronological order of: data.db creation and docker_setup, which copies data.db
-    does it exist if glastopf never ran before?
     
 - map user injected values to useful queries to comments and users tables
 
@@ -43,7 +40,7 @@ IMPLEMENTATION TODOs
             
         - rewrite tests according to modified implementation
         
-- implement MORE intelligent attacker fingerprinting, which is not only over HTTP headers (stupid)
+
 
 
 IMPLEMENTATION IN PROGRESS
@@ -54,9 +51,14 @@ IMPLEMENTATION IN PROGRESS
 IMPLEMENTATION DONEs
 --------------------
 
+- reduce dynamic dork page generation from 5 dork pages to 1 per time interval to improve sqlmap HTTP-response analyse
+
+- implement MORE intelligent attacker fingerprinting, which is not only over HTTP headers (still stupid)
 - check if ip-less attacker fingerprinting is really useful with browserless hacking (botnet, sqlmap)
 
 - Fix timing problem: docker_setup needs initial database, which is not there before glastopfs first run. 
+- Check chronological order of: data.db creation and docker_setup, which copies data.db
+    does it exist if glastopf never ran before?
 
 - implement intelligent attacker fingerprinting, which is not over ip address
 
