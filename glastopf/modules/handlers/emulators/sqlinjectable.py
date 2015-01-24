@@ -22,11 +22,11 @@ from glastopf.modules.injectable.injection import Injection
 from glastopf.modules.injectable.local_client import LocalClient
 from glastopf.virtualization.docker_client import DockerClient
 
-#import os
-#from random import choice
-#import codecs
-#from urlparse import parse_qs
-#from string import Template
+import os
+from random import choice
+import codecs
+from urlparse import parse_qs
+from string import Template
 
 class SQLinjectableEmulator(base_emulator.BaseEmulator):
     """Emulates a SQL injection vulnerability and a successful attack.
@@ -36,9 +36,8 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
     def __init__(self, data_dir):
         super(SQLinjectableEmulator, self).__init__(data_dir)
 
+
     def handle(self, attack_event, attackerdb_session, connection_string_data):
-        payload = "Payload generated from SQLinjectableEmulator"
-        value = ""
         #attacker fingerprinting and insertion in attacker.db
         attacker = Attacker.extract_attacker(attack_event)
         attacker = Attacker.insert_unique(attackerdb_session, attacker)
@@ -48,18 +47,18 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         injection = Injection(LocalClient(), attack_event, db_name)
         payload = injection.getResponse()
         
-        attack_event.http_request.set_response(payload)
+        #attack_event.http_request.set_response(payload)
         
-        #TODO RN: embedd response in fancy website
-        #pages_dir = os.path.join(self.data_dir, 'dork_pages')
-        #dork_page_list = os.listdir(pages_dir)
-        #dork_page = choice(dork_page_list)
-        #with codecs.open(os.path.join(pages_dir, dork_page), "r", "utf-8") as dork_page:
-        #    login_msg = payload
-        #    with codecs.open(os.path.join(self.data_dir, 'comments.txt'), "r", "utf-8") as comments_txt:
-        #        template = Template(dork_page.read())
-        #        response = template.safe_substitute(
-        #            login_msg=login_msg)
-        #    attack_event.http_request.set_response(response)
+        pages_dir = os.path.join(self.data_dir, 'dork_pages')
+        dork_page_list = os.listdir(pages_dir)
+        dork_page = dork_page_list[0]
+        with codecs.open(os.path.join(pages_dir, dork_page), "r", "utf-8") as dork_page:
+            login_msg = payload
+            template = Template(dork_page.read())
+            response = template.safe_substitute(
+                login_msg="")
+            response2 = response.replace('Please fill in your credentials', payload)
+        attack_event.http_request.set_response(response2)
+        return attack_event
 
 

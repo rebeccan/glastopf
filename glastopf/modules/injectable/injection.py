@@ -54,8 +54,7 @@ class Injection(object):
     injects the query accordingly to the user input and forms the response
     """
     def getResponse(self):
-        #TODO RN: remove "SQL Injectable Handler... <br></br>" from payload
-        payload = "SQL Injectable Handler... <br></br>"
+        payload = ""
         (login, password, comment) = self.getTaintedVars()
         
         #login stuff
