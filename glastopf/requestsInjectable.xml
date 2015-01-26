@@ -131,7 +131,7 @@
   <request>
     <id>18</id>
     <patternDescription>login brute force</patternDescription>
-    <patternString><![CDATA[^/login|.*(login|password).*]]></patternString>
+    <patternString><![CDATA[^/login|.*(login=|password=).*]]></patternString>
     <module>sqlinjectable</module>
   </request>
   <request>
