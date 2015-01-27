@@ -1,15 +1,14 @@
 IMPLEMENTATION TODOs
 --------------------
 
+- make docker server thread safe + faster
+
 - improve classification in requests.xml
     problem: SQLinjectableEmulator is only ran, when classified as sqlinjectable
     -> looks weired when an attacker tries to login normally
     "/comments", "?login=bla&password=bla
 
 - use comments table instead of comments.txt 
-
-- make input fields of GUI injectable
-    (seems to be a longer task, as the body seems to be ingored completely)
 
 - configuration: user can choose between emulators sqli and sqlintectable
 
@@ -47,6 +46,10 @@ IMPLEMENTATION IN PROGRESS
 --------------------------
 
 - embedd response from sqlinjectable handler in fancy website
+    * smart use of dork generator and templates
+
+- make input fields of GUI injectable
+    (seems to be a longer task, as the body seems to be ingored completely)
 
 IMPLEMENTATION DONEs
 --------------------

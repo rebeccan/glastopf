@@ -17,6 +17,7 @@
 
 
 from glastopf.modules.handlers import base_emulator
+from glastopf.modules.handlers.emulators.surface.template_builder import TemplateBuilder
 from glastopf.modules.fingerprinting.attacker import Attacker
 from glastopf.modules.injectable.injection import Injection
 from glastopf.modules.injectable.local_client import LocalClient
@@ -44,21 +45,17 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         db_name = attacker.get_db_name()
         
         #inject, form response
-        injection = Injection(LocalClient(), attack_event, db_name)
+        injection = Injection(DockerClient(), attack_event, db_name)
         payload = injection.getResponse()
         
-        #attack_event.http_request.set_response(payload)
+        base_template = TemplateBuilder(self.data_dir)
+        login_template = TemplateBuilder(self.data_dir, base_template.read_template("templates/login_form.html"))
+        login_template.add_string("login_msg", "Please fill in your credentials")
+        base_template.add_template_builder("login_form", login_template)
+        base_template.add_string("comments", "comments")
+        response = base_template.get_substitution()
         
-        pages_dir = os.path.join(self.data_dir, 'dork_pages')
-        dork_page_list = os.listdir(pages_dir)
-        dork_page = dork_page_list[0]
-        with codecs.open(os.path.join(pages_dir, dork_page), "r", "utf-8") as dork_page:
-            login_msg = payload
-            template = Template(dork_page.read())
-            response = template.safe_substitute(
-                login_msg="")
-            response2 = response.replace('Please fill in your credentials', payload)
-        attack_event.http_request.set_response(response2)
+        attack_event.http_request.set_response(response)
         return attack_event
 
 

@@ -59,5 +59,5 @@ class CommentPoster(base_emulator.BaseEmulator):
 
             display_comments = str(general_comments)
             template = Template(dork_page.read())
-            response = template.safe_substitute(login_msg="", comments=display_comments)
+            response = template.safe_substitute(login_msg="", login_form="", comments=display_comments)
             attack_event.http_request.set_response(response)

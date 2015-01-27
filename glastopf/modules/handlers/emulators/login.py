@@ -41,6 +41,6 @@ class LoginEmulator(base_emulator.BaseEmulator):
             with codecs.open(os.path.join(self.data_dir, 'comments.txt'), "r", "utf-8") as comments_txt:
                 template = Template(dork_page.read())
                 response = template.safe_substitute(
-                    login_msg=login_msg,
+                    login_msg=login_msg, login_form="",
                     comments=comments_txt.read())
             attack_event.http_request.set_response(response)
