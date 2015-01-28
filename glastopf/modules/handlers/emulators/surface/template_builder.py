@@ -19,10 +19,24 @@ import os
 import codecs
 from string import Template
 
+
+"""
+The TemplateBuilder is a class for dynamic HTML page building.
+TemplateBuilder helps with reading files and nesting.
+It is mainly used by emulators. Read files are dork pages or html templates.
+
+Why is this class needed?
+Dork_pages are generated frequently, but are static, as soon as generated, if not modified.
+Modification works through Template classes and the python method safe_substitute, that
+substitues keywords beginning with the character $ with given text.
+TemplateBuilder uses Templates and recursive safe_substitute to nest Templates.
+"""
 class TemplateBuilder(object):
     
     """
-    base_template_path, e.g. 'dork_pages/pagexy'
+    Creates a TemplateBuilder with the given base_template.
+    base_template: Has to be a Template, a path to a template (.e.g 'dork_pages/pagexy') or None.
+    If None, the base_template is read from the first dork_page.
     """
     def __init__(self, data_dir, base_template = None):
         self.data_dir = data_dir
@@ -34,7 +48,13 @@ class TemplateBuilder(object):
             dork_page = dork_page_list[0]
             with codecs.open(os.path.join(pages_dir, dork_page), "r", "utf-8") as dork_page:
                 self.base_template = Template(dork_page.read())
+        if(not isinstance(self.base_template, Template)):
+            self.base_template = self.read_template(self.base_template)
         
+    """
+    Reads a template file and returns a Template.
+    template_path: The path of the template file.
+    """
     def read_template(self, template_path):
         template_file = os.path.join(self.data_dir, template_path)
         if os.path.isfile(template_file):
@@ -45,6 +65,8 @@ class TemplateBuilder(object):
         return template
     
     """
+    Adds the substitution-pair to the children of the base_template.
+    Reads the template file from the template_path and wraps it into a TemplateBuilder.
     substitue_name, e.g. 'login_form' for subsitution at $login_form
     template_path, e.g. 'templates/login_form.html'
     """
@@ -53,17 +75,23 @@ class TemplateBuilder(object):
         self.children[substitue_name] = TemplateBuilder(self.data_dir, template)
     
     """
-    substitue_name, e.g. login_msg
+    Adds the substitution-pair to the children of the base_template.
+    Wraps the string substitute value into a Template and a TemplateBuilder.
+    substitue_name, e.g. "login_msg"
     subsitute_value, e.g. "Please fill in your credentials"
     """
     def add_string(self, substitue_name, subsitute_value):
         self.children[substitue_name] = TemplateBuilder(self.data_dir, Template(subsitute_value))
-        
+    
+    """
+    Adds the substitution-pair to the children of the base_template,
+    without wraping template_builder into a TemplateBuilder.
+    """
     def add_template_builder(self, substitue_name, template_builder):
         self.children[substitue_name] = template_builder
        
     def has_children(self):
-        if(len(self.template_children) < 1 and len(self.string_children) < 1):
+        if(len(self.children) < 1):
             return False
         return True
     
@@ -73,6 +101,11 @@ class TemplateBuilder(object):
     def get_base_template(self):
         return self.base_template
 
+
+    """
+    Performs recursive substitution for the base template and its children and their children...
+    Returns the result string.
+    """
     def get_substitution(self):
         d = {}
         for key in self.children:

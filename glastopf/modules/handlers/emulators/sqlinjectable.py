@@ -49,7 +49,7 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         payload = injection.getResponse()
         
         base_template = TemplateBuilder(self.data_dir)
-        login_template = TemplateBuilder(self.data_dir, base_template.read_template("templates/login_form.html"))
+        login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
         login_template.add_string("login_msg", "Please fill in your credentials")
         base_template.add_template_builder("login_form", login_template)
         base_template.add_string("comments", "comments")
