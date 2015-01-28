@@ -110,8 +110,6 @@ class TemplateBuilder(object):
         d = {}
         for key in self.children:
             d[key] = self.children[key].get_substitution()
-            print key
-            print d[key]
         return self.base_template.safe_substitute(d)
 
 

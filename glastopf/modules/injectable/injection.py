@@ -19,13 +19,16 @@
 from glastopf.modules.injectable.local_client import LocalClient
 from glastopf.virtualization.docker_client import DockerClient
 
+from glastopf.modules.handlers.emulators.surface.template_builder import TemplateBuilder
+
 from xml.etree import ElementTree
 import os
 
 
 class Injection(object):
     
-    def __init__(self, client, attack_event, db_name):
+    def __init__(self, data_dir, client, attack_event, db_name):
+        self.data_dir = data_dir
         self.client = client
         self.attack_event = attack_event
         self.db_name = db_name
@@ -51,10 +54,12 @@ class Injection(object):
         
     
     """
-    injects the query accordingly to the user input and forms the response
+    injects the query accordingly to the user input and forms the response and embedds it into a template
     """
     def getResponse(self):
-        payload = ""
+        reponse = ""
+        base_template = TemplateBuilder(self.data_dir)
+        
         (login, password, comment) = self.getTaintedVars()
         
         #login stuff
@@ -66,19 +71,40 @@ class Injection(object):
             empty = True
             for row in injectionResult:
                 empty = False
-                payload = payload + "Logged in successfully as " + str(row['email'])
+                base_template.add_string("login_form", "Logged in successfully as " + str(row['email']))
             if(empty):
-                payload = payload + "Wrong username or password."
-        if((login is None) != (password is None)):
-            #response
-            payload = payload + "Wrong username or password."
+                login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
+                login_template.add_string("login_msg", "Wrong username or password.")
+                base_template.add_template_builder("login_form", login_template)
+        elif((login is None) != (password is None)):
+            login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
+            login_template.add_string("login_msg", "Wrong username or password.")
+            base_template.add_template_builder("login_form", login_template)
+        else:
+            login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
+            login_template.add_string("login_msg", "Please fill on your credentials")
+            base_template.add_template_builder("login_form", login_template)
             
         #comment stuff
+        #FIX RN: make comment section work
         if(comment is not None):
             #query
-            query = "INSERT INTO comments (comment) VALUES ('" + comment + "');"
+            query = "INSERT INTO comments (comment) VALUES ('" + comment + "')"
             injectionResult = self.client.manage_injection(self.db_name, query)
-            #response
-            payload = payload + "Comment inserted successfully."
-            
-        return payload
+            #response: comment shows up
+        #retrieve comments
+        query = "SELECT * from comments"
+        injectionResult = self.client.manage_injection(self.db_name, query)
+        commentsResponse = ""
+        for key in injectionResult:
+            commentsResponse = commentsResponse +  "<br/><br/>" + injectionResult[key]
+        base_template.add_string("comments", commentsResponse)
+        #TODO RN: modify comments emulator?
+        
+        response = base_template.get_substitution()
+        return response
+    
+    
+    
+    
+    

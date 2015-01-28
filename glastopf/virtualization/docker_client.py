@@ -24,17 +24,17 @@ class DockerClient(object):
     
     def __init__(self):
         self.HOST, self.PORT = "127.0.0.1", 49153
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         
     def manage_injection(self, db_name = "", query = ""):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             # Connect to server and send data
-            self.sock.connect((self.HOST, self.PORT))
-            self.sock.sendall(db_name + "\n")
-            self.sock.sendall(query + "\n")
+            sock.connect((self.HOST, self.PORT))
+            sock.sendall(db_name + "\n")
+            sock.sendall(query + "\n")
             # Receive data from the server and shut down
-            rfile = self.sock.makefile(mode = 'rb')
+            rfile = sock.makefile(mode = 'rb')
             rows = []
             response = str(rfile.readline())
             while(response is not "" and not response.isspace()):
@@ -42,7 +42,7 @@ class DockerClient(object):
                 rows.append(DockerClient.deserialze_row(response))
                 response = rfile.readline()
         finally:
-            self.sock.close()
+            sock.close()
         return rows
     
     

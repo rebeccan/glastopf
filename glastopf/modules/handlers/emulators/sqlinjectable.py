@@ -17,17 +17,10 @@
 
 
 from glastopf.modules.handlers import base_emulator
-from glastopf.modules.handlers.emulators.surface.template_builder import TemplateBuilder
 from glastopf.modules.fingerprinting.attacker import Attacker
 from glastopf.modules.injectable.injection import Injection
 from glastopf.modules.injectable.local_client import LocalClient
 from glastopf.virtualization.docker_client import DockerClient
-
-import os
-from random import choice
-import codecs
-from urlparse import parse_qs
-from string import Template
 
 class SQLinjectableEmulator(base_emulator.BaseEmulator):
     """Emulates a SQL injection vulnerability and a successful attack.
@@ -45,17 +38,10 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         db_name = attacker.get_db_name()
         
         #inject, form response
-        injection = Injection(DockerClient(), attack_event, db_name)
+        injection = Injection(self.data_dir, LocalClient(), attack_event, db_name)
         payload = injection.getResponse()
         
-        base_template = TemplateBuilder(self.data_dir)
-        login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
-        login_template.add_string("login_msg", "Please fill in your credentials")
-        base_template.add_template_builder("login_form", login_template)
-        base_template.add_string("comments", "comments")
-        response = base_template.get_substitution()
-        
-        attack_event.http_request.set_response(response)
+        attack_event.http_request.set_response(payload)
         return attack_event
 
 
