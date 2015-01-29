@@ -63,7 +63,7 @@ class CommentPoster(base_emulator.BaseEmulator):
             template = Template(dork_page.read())
             base_template = TemplateBuilder(self.data_dir, template)
             login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
-            login_template.add_string("login_msg", "Please fill on your credentials")
+            login_template.add_string("login_msg", "Please fill in your credentials")
             base_template.add_template_builder("login_form", login_template)
             base_template.add_string("comments", display_comments)
             response = base_template.get_substitution()

@@ -21,6 +21,7 @@ from glastopf.virtualization.docker_client import DockerClient
 
 from glastopf.modules.handlers.emulators.surface.template_builder import TemplateBuilder
 
+from urlparse import parse_qs
 from xml.etree import ElementTree
 import os
 
@@ -42,7 +43,16 @@ class Injection(object):
     (ignores non mapable user input)
     """
     def getTaintedVars(self):
-        #TODO RN: parse stuff from request body as well
+        #TODO RN: parse form fields
+        url_dict = parse_qs(self.attack_event.http_request.request_body)
+        if ('login' in url_dict):
+            self.login = url_dict['login'][0]
+        if ('password' in url_dict):
+            self.password = url_dict['password'][0]
+        if ('comment' in url_dict):
+            self.comment = url_dict['comment'][0]
+        
+        #parse URL
         query_dictionary = self.attack_event.http_request.request_query
         if(query_dictionary.has_key('login')):
             self.login = str(query_dictionary.get('login')[0])
@@ -82,7 +92,7 @@ class Injection(object):
             base_template.add_template_builder("login_form", login_template)
         else:
             login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
-            login_template.add_string("login_msg", "Please fill on your credentials")
+            login_template.add_string("login_msg", "Please fill in your credentials")
             base_template.add_template_builder("login_form", login_template)
             
         #comment stuff
