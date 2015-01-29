@@ -61,3 +61,6 @@ Note: Host machine needs to be a 64 Bit machine because GlastopfInjectable uses 
 
 - see webpage in browser
 	http://127.0.0.1:8181/
+        
+- see docker STDOUT/STDERR logs in a terminal:
+    docker logs -f {container_id}
