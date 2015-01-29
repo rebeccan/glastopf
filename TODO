@@ -8,7 +8,7 @@ IMPLEMENTATION TODOs
     -> looks weired when an attacker tries to login normally
     "/comments", "?login=bla&password=bla
 
-- use comments table instead of comments.txt 
+- use comments table instead of comments.txt for convincable SQL-injection delivered as a comment
 
 - configuration: user can choose between emulators sqli and sqlintectable
 
@@ -24,9 +24,6 @@ IMPLEMENTATION TODOs
 
 - clean Docker stuff:
     delete/rebuild specific db inside VM
-    
-- Docker:
-    find out how to open NEW terminal for dockercontainer stdout
 
 - Fix:
         - python -m unittest discover -s testing -p 'test_emulators.py'
@@ -45,14 +42,22 @@ IMPLEMENTATION TODOs
 IMPLEMENTATION IN PROGRESS
 --------------------------
 
-- embedd response from sqlinjectable handler in fancy website
-    * smart use of dork generator and templates
 
 - make input fields of GUI injectable
     (seems to be a longer task, as the body seems to be ingored completely)
+    
+
 
 IMPLEMENTATION DONEs
 --------------------
+
+- Docker:
+    find out how to open NEW terminal for dockercontainer stdout
+    Workaraound: https://docs.docker.com/reference/commandline/cli/#logs
+        "The docker logs --follow command will continue streaming the new output from the container's STDOUT and STDERR."
+
+- embedd response from sqlinjectable handler in fancy website
+    * smart use of dork generator and templates
 
 - reduce dynamic dork page generation from 5 dork pages to 1 per time interval to improve sqlmap HTTP-response analyse
 

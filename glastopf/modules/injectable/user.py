@@ -72,4 +72,3 @@ class User(Base):
         d['email'] = str(row.email)
         d['password'] = str(row.password)
         return d
-

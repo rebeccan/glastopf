@@ -16,6 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from glastopf.modules.injectable.user import User
+from glastopf.modules.injectable.comment import Comment
 from glastopf.modules.injectable.db_copy import DB_copy
 
 import ast
@@ -25,15 +26,21 @@ class LocalClient(object):
     def __init__(self):
         return
     
-    def manage_injection(self, db_name, query = ""):
+    def manage_injection(self, db_name, table, query = ""):
         #create copy
         copy = DB_copy(db_name)
         copy.create_copy()
         #create session
         conn_str = copy.get_db_copy_conn_str()
-        session = User.connect(conn_str)
-        #make injection
-        injectionResult = User.injection(session, query)
+        if(table == "comments"):
+            session = Comment.connect(conn_str)
+            #make injection
+            injectionResult = Comment.injection(session, query)
+        elif(table == "users"):
+            session = User.connect(conn_str)
+            #make injection
+            injectionResult = User.injection(session, query)
+        session.commit()
         session.close()
         rows = []
         for row in injectionResult:

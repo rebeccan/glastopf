@@ -22,6 +22,7 @@ import SocketServer
 
 from glastopf.modules.injectable.db_copy import DB_copy
 from glastopf.modules.injectable.user import User
+from glastopf.modules.injectable.comment import Comment
 
 #TODO RN: SocketServer handles requests synchronously
 # -> implement threading with workers
@@ -34,11 +35,13 @@ class DockerServer(SocketServer.StreamRequestHandler):
     """
     def handle(self):
         db_name = self.rfile.readline().strip()
+        table = self.rfile.readline().strip()
         query = self.rfile.readline()
         print "{} wrote:".format(self.client_address[0])
         print db_name
+        print table
         print query
-        result = self.handle_query(db_name, query)
+        result = self.handle_query(db_name, table, query)
         for r in result:
             self.wfile.write(str(r) + "\n")
             self.wfile.flush()
@@ -46,16 +49,22 @@ class DockerServer(SocketServer.StreamRequestHandler):
         self.wfile.flush()
             
 
-    def handle_query(self, db_name, query):
+    def handle_query(self, db_name, table, query):
         #create copy
         db_dir = os.getcwd() + '/db'
         copy = DB_copy(db_name, work_dir = db_dir)
         copy.create_copy()
         #create session
         conn_str = copy.get_db_copy_conn_str()
-        session = User.connect(conn_str)
-        #make injection
-        injectionResult = User.injection(session, query)
+        if(table == "comments"):
+            session = Comment.connect(conn_str)
+            #make injection
+            injectionResult = Comment.injection(session, query)
+        elif(table == "users"):
+            session = User.connect(conn_str)
+            #make injection
+            injectionResult = User.injection(session, query)
+        session.commit()
         #close db connection
         session.close()
         return injectionResult

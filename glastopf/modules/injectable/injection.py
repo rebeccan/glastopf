@@ -66,7 +66,7 @@ class Injection(object):
         if(login is not None and password is not None):
             #query
             query = "SELECT * FROM users WHERE email = '" + login + "' AND password = '" + password + "'"
-            injectionResult = self.client.manage_injection(self.db_name, query)
+            injectionResult = self.client.manage_injection(self.db_name,'users', query)
             #response
             empty = True
             for row in injectionResult:
@@ -90,14 +90,14 @@ class Injection(object):
         if(comment is not None):
             #query
             query = "INSERT INTO comments (comment) VALUES ('" + comment + "')"
-            injectionResult = self.client.manage_injection(self.db_name, query)
+            injectionResult = self.client.manage_injection(self.db_name,'comments', query)
             #response: comment shows up
         #retrieve comments
         query = "SELECT * from comments"
-        injectionResult = self.client.manage_injection(self.db_name, query)
+        injectionResult = self.client.manage_injection(self.db_name,'comments', query)
         commentsResponse = ""
-        for key in injectionResult:
-            commentsResponse = commentsResponse +  "<br/><br/>" + injectionResult[key]
+        for item in injectionResult:
+            commentsResponse = commentsResponse +  "<br/><br/>" + item['comment']
         base_template.add_string("comments", commentsResponse)
         #TODO RN: modify comments emulator?
         

@@ -49,8 +49,21 @@ class Comment(Base):
     @staticmethod
     def injection(session, query):
         result = session.execute(query)
-        return result
+        return Comment.serialize_rows(result)
     
+    @staticmethod
+    def serialize_rows(rows):
+        l = []
+        try:
+            for row in rows:
+                l.append(repr(Comment.row2dict(row)))
+        finally:
+            return l
+   
 
-    
-    
+    @staticmethod
+    def row2dict(row):
+        d = {}
+        d['id'] = str(row.id)
+        d['comment'] = str(row.comment)
+        return d

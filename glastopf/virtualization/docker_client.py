@@ -26,12 +26,13 @@ class DockerClient(object):
         self.HOST, self.PORT = "127.0.0.1", 49153
         
         
-    def manage_injection(self, db_name = "", query = ""):
+    def manage_injection(self, db_name, table, query = ""):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             # Connect to server and send data
             sock.connect((self.HOST, self.PORT))
             sock.sendall(db_name + "\n")
+            sock.sendall(table + "\n")
             sock.sendall(query + "\n")
             # Receive data from the server and shut down
             rfile = sock.makefile(mode = 'rb')
