@@ -21,6 +21,8 @@ import codecs
 from urlparse import parse_qs
 from string import Template
 
+from glastopf.modules.handlers.emulators.surface.template_builder import TemplateBuilder
+
 from glastopf.modules.handlers import base_emulator
 
 
@@ -40,7 +42,12 @@ class LoginEmulator(base_emulator.BaseEmulator):
                 login_msg = ""
             with codecs.open(os.path.join(self.data_dir, 'comments.txt'), "r", "utf-8") as comments_txt:
                 template = Template(dork_page.read())
-                response = template.safe_substitute(
-                    login_msg=login_msg, login_form="",
-                    comments=comments_txt.read())
+                
+                base_template = TemplateBuilder(self.data_dir, template)
+                login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
+                login_template.add_string("login_msg", login_msg)
+                base_template.add_template_builder("login_form", login_template)
+                base_template.add_string("comments", comments_txt.read())
+                response = base_template.get_substitution()
+                
             attack_event.http_request.set_response(response)

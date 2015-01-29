@@ -6,6 +6,8 @@ from string import Template
 import cgi
 from glastopf.modules.handlers import base_emulator
 
+from glastopf.modules.handlers.emulators.surface.template_builder import TemplateBuilder
+
 #import glastopf.modules.processing.profiler as profiler
 
 
@@ -59,5 +61,11 @@ class CommentPoster(base_emulator.BaseEmulator):
 
             display_comments = str(general_comments)
             template = Template(dork_page.read())
-            response = template.safe_substitute(login_msg="", login_form="", comments=display_comments)
+            base_template = TemplateBuilder(self.data_dir, template)
+            login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
+            login_template.add_string("login_msg", "Please fill on your credentials")
+            base_template.add_template_builder("login_form", login_template)
+            base_template.add_string("comments", display_comments)
+            response = base_template.get_substitution()
+            
             attack_event.http_request.set_response(response)
