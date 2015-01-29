@@ -43,13 +43,16 @@ IMPLEMENTATION IN PROGRESS
 --------------------------
 
 
-- make input fields of GUI injectable
-    (seems to be a longer task, as the body seems to be ingored completely)
+- look into session management
+    e.g. for remembering previous logins.
     
 
 
 IMPLEMENTATION DONEs
 --------------------
+
+- make input fields of GUI injectable
+    (seems to be a longer task, as the body seems to be ingored completely)
 
 - Docker:
     find out how to open NEW terminal for dockercontainer stdout
