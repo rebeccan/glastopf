@@ -3,13 +3,6 @@ IMPLEMENTATION TODOs
 
 - make docker server thread safe + faster
 
-- improve classification in requests.xml
-    problem: SQLinjectableEmulator is only ran, when classified as sqlinjectable
-    -> looks weired when an attacker tries to login normally
-    "/comments", "?login=bla&password=bla
-
-- use comments table instead of comments.txt for convincable SQL-injection delivered as a comment
-
 - configuration: user can choose between emulators sqli and sqlintectable
 
 - cleaning databases cron job:
@@ -42,14 +35,28 @@ IMPLEMENTATION TODOs
 IMPLEMENTATION IN PROGRESS
 --------------------------
 
+- use comments table instead of comments.txt for convincable SQL-injection delivered as a comment
 
-- look into session management
-    e.g. for remembering previous logins.
+- improve classification in requests.xml
+    problem: SQLinjectableEmulator is only ran, when classified as sqlinjectable
+    -> looks weired when an attacker tries to login normally
+    "/comments", "?login=bla&password=bla
+
+- session management
+    * make sure cookie is not overriden or HTTP-response is unclean due to cascaded response creation
+    * use session in SQLInjectableEmulator
     
 
 
 IMPLEMENTATION DONEs
 --------------------
+
+- session management
+    e.g. for remembering previous logins.
+    * SessionEmulator
+    * send HTTP-Cookie
+    * load SimpleCookie from HTTP-request
+    * cascade SessionEmulator prior other emulators
 
 - make input fields of GUI injectable
     (seems to be a longer task, as the body seems to be ingored completely)

@@ -49,6 +49,7 @@ from subprocess import check_call
 from sqlalchemy import create_engine
 from virtualization import docker
 import seed
+from modules.handlers.emulators.session import SessionEmulator
 
 logger = logging.getLogger(__name__)
 package_directory = os.path.dirname(os.path.abspath(__file__))
@@ -301,6 +302,10 @@ class GlastopfHoneypot(object):
             attack_event.http_request.command,
             self.MethodHandlers.GET
         )(attack_event.http_request)
+        
+        #cascade emulators: session emulator to set cookie first
+        attack_event = SessionEmulator(os.path.join(self.work_dir, 'data/')).handle(attack_event)
+        
         # Handle the request with the specific vulnerability module
         request_handler = RequestHandler(os.path.join(self.work_dir, 'data/'))
         emulator = request_handler.get_handler(attack_event.matched_pattern)
