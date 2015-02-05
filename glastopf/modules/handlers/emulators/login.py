@@ -50,4 +50,4 @@ class LoginEmulator(base_emulator.BaseEmulator):
                 base_template.add_string("comments", comments_txt.read())
                 response = base_template.get_substitution()
                 
-            attack_event.http_request.set_response(response)
+            attack_event.http_request.add_response(response)

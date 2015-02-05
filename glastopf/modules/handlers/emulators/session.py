@@ -83,7 +83,7 @@ class SessionEmulator(base_emulator.BaseEmulator):
             #add cookie to response headers
             cookie_str = cookie.output().replace('Set-Cookie: ', '')
             print "send cookie to client" + cookie_str
-            attack_event.http_request.set_response(body ='', http_code=0, headers=(
+            attack_event.http_request.add_response(body ='', http_code=-1, headers=(
                 ('Set-Cookie', cookie_str),
             ))
         return attack_event

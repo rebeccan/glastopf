@@ -36,5 +36,5 @@ class PMAEmulator(base_emulator.BaseEmulator):
         page_template = Template(self.page)
         response = page_template.substitute(
             token_value=m.hexdigest() )
-        attack_event.http_request.set_response(response)
+        attack_event.http_request.add_response(response)
         return attack_event

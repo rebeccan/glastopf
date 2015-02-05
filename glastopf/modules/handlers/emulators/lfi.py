@@ -52,7 +52,7 @@ class LFIEmulator(base_emulator.BaseEmulator):
             if path in self.virtualdocs_whitelist():
                 with open(path, "r") as f:
                     response = f.read()
-                    attack_event.http_request.set_response(response)
+                    attack_event.http_request.add_response(response)
             else:
                 raise IOError
         except IOError:

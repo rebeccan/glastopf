@@ -23,5 +23,5 @@ class DummyHandler(base_emulator.BaseEmulator):
         super(DummyHandler, self).__init__(data_dir)
 
     def handle(self, attack_event):
-        attack_event.http_request.set_response("dummy response")
+        attack_event.http_request.add_response("dummy response")
 

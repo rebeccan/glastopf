@@ -18,6 +18,7 @@
 import urlparse
 from StringIO import StringIO
 from BaseHTTPServer import BaseHTTPRequestHandler
+from sets import Set
 import logging
 
 logger = logging.getLogger(__name__)
@@ -68,6 +69,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
             self.request_headers = self.headers
         else:
             self.request_headers = BaseHTTPRequestHandler.MessageClass
+            
+        self.response = []
 
     def handle_one_request(self):
         """
@@ -101,7 +104,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
 
     def set_response(self, body, http_code=200, headers=(('Content-type', 'text/html'),)):
         """
-        Sets body, response code and headers. Mapping between http_code and error text is handled
+        Sets AND SENDS body, response code and headers. Mapping between http_code and error text is handled
         by the parent class.
 
         :param body: the response body.
@@ -113,6 +116,23 @@ class HTTPHandler(BaseHTTPRequestHandler):
             self.send_header(header[0], header[1])
         self.end_headers()
         self.wfile.write(body)
+        
+    def add_response(self, body, http_code=200, headers=(('Content-type', 'text/html'),)):
+        d = {'body': body, 'http_code':http_code, 'headers': headers}
+        self.response.append(d)
+    
+    def merge_and_send_response(self):
+        http_code = 200
+        headers=Set([])
+        body = ''
+        for r_part in self.response:
+            body = body + r_part['body']
+            if not r_part['http_code'] is -1:
+                http_code = r_part['http_code']
+            for header in r_part['headers']:
+                headers.add(header)
+        print headers
+        self.set_response(body, http_code, headers)
 
     def set_raw_response(self, content):
         """

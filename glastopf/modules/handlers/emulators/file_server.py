@@ -34,4 +34,4 @@ class FileServer(base_emulator.BaseEmulator):
             with open(os.path.join(server_path, request_file), 'r') as f:
                 response += f.read()
         #response with no content-type header
-        attack_event.http_request.set_response(response, headers=())
+        attack_event.http_request.add_response(response, headers=())

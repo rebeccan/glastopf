@@ -31,5 +31,5 @@ class PHPInfoHandler(base_emulator.BaseEmulator):
         robots_path = os.path.join(self.data_dir, 'phpinfo/phpinfo.html')
         with open(robots_path, 'r') as robot_file:
             response = robot_file.read()
-        attack_event.http_request.set_response(response)
+        attack_event.http_request.add_response(response)
         return attack_event

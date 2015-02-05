@@ -313,11 +313,13 @@ class GlastopfHoneypot(object):
             emulator.handle(attack_event, self.attackerdb, self.connection_string_data)
         else:
             emulator.handle(attack_event)
+        #end of emulator cascade -> take care about response    
+        attack_event.http_request.merge_and_send_response()
         # Logging the event
         if self.profiler_available:
             self.profiler.handle_event(attack_event)
         self.post_queue.put(attack_event)
-
+        
         header = attack_event.http_request.get_response_header()
         body = attack_event.http_request.get_response_body()
         return header, body
