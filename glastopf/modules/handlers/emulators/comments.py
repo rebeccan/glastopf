@@ -7,6 +7,7 @@ import cgi
 from glastopf.modules.handlers import base_emulator
 
 from glastopf.modules.handlers.emulators.surface.template_builder import TemplateBuilder
+from glastopf.modules.handlers.emulators.session import get_sid, is_logged_in, is_valid, get_logged_in
 
 #import glastopf.modules.processing.profiler as profiler
 
@@ -62,9 +63,13 @@ class CommentPoster(base_emulator.BaseEmulator):
             display_comments = str(general_comments)
             template = Template(dork_page.read())
             base_template = TemplateBuilder(self.data_dir, template)
-            login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
-            login_template.add_string("login_msg", "Please fill in your credentials")
-            base_template.add_template_builder("login_form", login_template)
+            sid = get_sid(attack_event)
+            if(is_valid(sid) and is_logged_in(sid)):
+                base_template.add_string("login_form", get_logged_in(sid))
+            else:
+                login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
+                login_template.add_string("login_msg", "Please fill in your credentials")
+                base_template.add_template_builder("login_form", login_template)
             base_template.add_string("comments", display_comments)
             response = base_template.get_substitution()
             

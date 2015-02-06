@@ -21,6 +21,9 @@ from glastopf.virtualization.docker_client import DockerClient
 
 from glastopf.modules.handlers.emulators.surface.template_builder import TemplateBuilder
 
+from glastopf.modules.handlers.emulators.session import set_logged_in, get_sid, is_logged_in, is_valid, get_logged_in
+
+
 from urlparse import parse_qs
 from xml.etree import ElementTree
 import os
@@ -71,6 +74,7 @@ class Injection(object):
         base_template = TemplateBuilder(self.data_dir)
         
         (login, password, comment) = self.getTaintedVars()
+        sid = get_sid(self.attack_event)
         
         #login stuff
         if(login is not None and password is not None):
@@ -81,7 +85,11 @@ class Injection(object):
             empty = True
             for row in injectionResult:
                 empty = False
-                base_template.add_string("login_form", "Logged in successfully as " + str(row['email']))
+                success_msg = "Logged in as " + str(row['email'])
+                #authenticate session
+                sid = get_sid(self.attack_event)
+                set_logged_in(sid, success_msg)
+                base_template.add_string("login_form", success_msg)
             if(empty):
                 login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
                 login_template.add_string("login_msg", "Wrong username or password.")
@@ -90,6 +98,8 @@ class Injection(object):
             login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
             login_template.add_string("login_msg", "Wrong username or password.")
             base_template.add_template_builder("login_form", login_template)
+        elif(is_valid(sid) and is_logged_in(sid)):
+            base_template.add_string("login_form", get_logged_in(sid))
         else:
             login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
             login_template.add_string("login_msg", "Please fill in your credentials")

@@ -23,6 +23,8 @@ from string import Template
 
 from glastopf.modules.handlers.emulators.surface.template_builder import TemplateBuilder
 
+from glastopf.modules.handlers.emulators.session import get_sid, is_logged_in, is_valid, get_logged_in
+
 from glastopf.modules.handlers import base_emulator
 
 
@@ -58,10 +60,15 @@ class DorkList(base_emulator.BaseEmulator):
     def handle(self, attack_event):
         template, display_comments = self._get_template(attack_event)
         
+        sid = get_sid(attack_event)
+        
         base_template = TemplateBuilder(self.data_dir, template)
-        login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
-        login_template.add_string("login_msg", "Please fill in your credentials")
-        base_template.add_template_builder("login_form", login_template)
+        if(is_valid(sid) and is_logged_in(sid)):
+            base_template.add_string("login_form", get_logged_in(sid))
+        else:
+            login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
+            login_template.add_string("login_msg", "Please fill in your credentials")
+            base_template.add_template_builder("login_form", login_template)
         base_template.add_string("comments", display_comments)
         self.template = base_template.get_substitution()
         

@@ -46,25 +46,9 @@ class SessionEmulator(base_emulator.BaseEmulator):
         global lock
         global counter
         
-        invalid = False
-        not_stored = False
-        #check received cookie for existance in sessions and expiration
-        received = str(attack_event.get_header_value('Cookie'))
-        if received:
-            received_cookie = SimpleCookie(received)
-            print "got cookie from client: " + received_cookie.output()
-            received_sid = received_cookie['sid'].value
-            if(sessions.has_key(received_sid)):
-                stored_cookie_dict = sessions[received_sid]
-                stored_cookie = stored_cookie_dict['cookie']
-                #check if cookie is expired
-                if((stored_cookie is not None) and
-                    (datetime.strptime(stored_cookie['sid']['expires'],'%a, %d %b %Y %H:%M:%S')
-                    < datetime.now())):
-                    invalid = True
-            else: not_stored = True
-        #create new cookie
-        if not received or invalid or not_stored:
+        received_sid = get_sid(attack_event)
+        if(not received_sid or not is_valid(received_sid)):
+            #create new cookie
             cookie = SimpleCookie()
             with lock:
                 #cookie creation
@@ -74,28 +58,46 @@ class SessionEmulator(base_emulator.BaseEmulator):
                 cookie['sid']['max-age'] = 1800 # seconds
                 expires = datetime.now() + timedelta(minutes=30)
                 cookie['sid']['expires'] = expires.strftime('%a, %d %b %Y %H:%M:%S') # Wdy, DD-Mon-YY HH:MM:SS GMT
-                #add cookie to sessions
-                if invalid:
-                    sessions[str(counter)] = {'cookie': cookie, 'logged_in': sessions[received_cookie['sid'].value]['logged_in']}
-                else:
-                    sessions[str(counter)] = {'cookie': cookie, 'logged_in': False}
+                #add cookie to sessions (logged out, if expired)
+                sessions[str(counter)] = {'cookie': cookie, 'logged_in': 'False'}
                 counter = counter + 1
             #add cookie to response headers
             cookie_str = cookie.output().replace('Set-Cookie: ', '')
-            print "send cookie to client" + cookie_str
+            print "Send cookie to client: " + cookie_str
             attack_event.http_request.add_response(body ='', http_code=-1, headers=(
                 ('Set-Cookie', cookie_str),
             ))
         return attack_event
-    
-    
+
+
+
+
+"""return sid, extracted from attack. Empty string, if none."""    
+def get_sid(attack_event):
+    received = str(attack_event.get_header_value('Cookie'))
+    if(received):
+        received_cookie = SimpleCookie(received)
+        return received_cookie['sid'].value
+    else: return 'invalid_sid'
+
+"""check if sid is valid, meaning in sessions-dict and not expired"""
 def is_valid(sid):
-    return sessions[sid]['cookie']['expires'] < datetime.now()
+    if(sessions.has_key(sid)):
+        stored_cookie_dict = sessions[sid]
+        stored_cookie = stored_cookie_dict['cookie']
+        if(datetime.strptime(stored_cookie['sid']['expires'],'%a, %d %b %Y %H:%M:%S')
+            < datetime.now()):
+            return False
+        return True
+    return False
+    
+def is_logged_in(sid):
+    if(sessions.has_key(sid)):
+        return not sessions[sid]['logged_in'] == 'False'
+    else: return False
 
 def set_logged_in(sid, logged_in_msg):
     sessions[sid]['logged_in'] = logged_in_msg
     
-def is_logged_in(sid):
-    return sessions[sid]['logged_in'] is not False
-
-
+def get_logged_in(sid):
+    return str(sessions[sid]['logged_in'])

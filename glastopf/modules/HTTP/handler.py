@@ -131,7 +131,6 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 http_code = r_part['http_code']
             for header in r_part['headers']:
                 headers.add(header)
-        print headers
         self.set_response(body, http_code, headers)
 
     def set_raw_response(self, content):

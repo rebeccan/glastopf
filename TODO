@@ -42,8 +42,6 @@ IMPLEMENTATION IN PROGRESS
     -> looks weired when an attacker tries to login normally
     "/comments", "?login=bla&password=bla
 
-- session management
-    * use session in SQLInjectableEmulator
     
 
 
@@ -57,6 +55,7 @@ IMPLEMENTATION DONEs
     * load SimpleCookie from HTTP-request
     * cascade SessionEmulator prior other emulators
     * make sure cookie is not overriden or HTTP-response is unclean due to cascaded response creation
+    * use session in other emulators, that deliver the login screen
 
 - make input fields of GUI injectable
     (seems to be a longer task, as the body seems to be ingored completely)
