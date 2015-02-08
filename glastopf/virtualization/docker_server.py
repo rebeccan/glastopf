@@ -19,6 +19,7 @@ import sys
 import os
 import os.path
 import SocketServer
+import threading
 
 from glastopf.modules.injectable.db_copy import DB_copy
 from glastopf.modules.injectable.user import User
@@ -27,7 +28,7 @@ from glastopf.modules.injectable.comment import Comment
 #TODO RN: SocketServer handles requests synchronously
 # -> implement threading with workers
 "DockerServer is running on Docker container. It receives and handles requests from DockerClient Glastopf host."
-class DockerServer(SocketServer.StreamRequestHandler):
+class DockerServerHandler(SocketServer.StreamRequestHandler):
     
     """
     reads 2 lines from connections (one with database name, one with query string)
@@ -70,15 +71,23 @@ class DockerServer(SocketServer.StreamRequestHandler):
         return injectionResult
 
 
+class DockerServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    pass
+
+
 """runs the docker_server"""
 def main():
     HOST, PORT = "0.0.0.0", 49153
     
     print "start docker_server on host " + str(HOST) + " port " + str(PORT)
     
-    server = SocketServer.TCPServer((HOST, PORT), DockerServer)
+    server = DockerServer((HOST, PORT), DockerServerHandler)
 
-    server.serve_forever()
+   # terminate with Ctrl-C
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        sys.exit(0)
     
 
 if __name__ == "__main__":

@@ -1,15 +1,13 @@
 IMPLEMENTATION TODOs
 --------------------
 
-- make docker server thread safe + faster
+
 
 - configuration: user can choose between emulators sqli and sqlintectable
 
 - cleaning databases cron job:
     - add timestamp of latest_activity to attacker
     - delete all dataxx.db for attackers whose latest_activity is longer than one week
-    
-- sqlalchemy sessions and concurrency?
 
 - "connection_string_data" from configuration -> do something useful or delete
     
@@ -36,17 +34,29 @@ IMPLEMENTATION IN PROGRESS
 --------------------------
 
 - use comments table instead of comments.txt for convincable SQL-injection delivered as a comment
+    (problem in unknown-emulator and comments-emulator)
 
 - improve classification in requests.xml
     problem: SQLinjectableEmulator is only ran, when classified as sqlinjectable
     -> looks weired when an attacker tries to login normally
     "/comments", "?login=bla&password=bla
 
-    
+- Check code: sqlalchemy sessions and concurrency
+    Every Thread should use its own Session.
+    Session blocks other sessions, when it first did a modifiyng operation until it commits.
 
+
+- Check Docker Responses:
+    [18:47:20] [WARNING] there is a possibility that the target (or WAF) is dropping 'suspicious' requests
+    [18:49:41] [WARNING] HTTP error codes detected during run: 500 (Internal Server Error) - 17 times
+    
 
 IMPLEMENTATION DONEs
 --------------------
+
+
+
+- make docker server faster through threading (+ threadsafe!!)
 
 - session management
     e.g. for remembering previous logins.
