@@ -45,16 +45,15 @@ IMPLEMENTATION IN PROGRESS
     Every Thread should use its own Session.
     Session blocks other sessions, when it first did a modifiyng operation until it commits.
 
-
-- Check Docker Responses:
+- Check SQLmap Response - what is getting dropped?:
     [18:47:20] [WARNING] there is a possibility that the target (or WAF) is dropping 'suspicious' requests
-    [18:49:41] [WARNING] HTTP error codes detected during run: 500 (Internal Server Error) - 17 times
-    
+
 
 IMPLEMENTATION DONEs
 --------------------
 
-
+- BUG Fix Internal Server Error through set_logged_in Method for Cookieless Clients:
+    [18:49:41] [WARNING] HTTP error codes detected during run: 500 (Internal Server Error) - 17 times
 
 - make docker server faster through threading (+ threadsafe!!)
 

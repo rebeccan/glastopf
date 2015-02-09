@@ -97,7 +97,8 @@ def is_logged_in(sid):
     else: return False
 
 def set_logged_in(sid, logged_in_msg):
-    sessions[sid]['logged_in'] = logged_in_msg
+    if(sessions.has_key(sid)):
+        sessions[sid]['logged_in'] = logged_in_msg
     
 def get_logged_in(sid):
     return str(sessions[sid]['logged_in'])
