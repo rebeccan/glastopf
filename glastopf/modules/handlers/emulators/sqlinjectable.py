@@ -31,11 +31,13 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         super(SQLinjectableEmulator, self).__init__(data_dir)
 
 
-    def handle(self, attack_event, attackerdb_session, connection_string_data):
+    def handle(self, attack_event, attacker_connection_string, connection_string_data):
         #attacker fingerprinting and insertion in attacker.db
+        attacker_session = Attacker.connect(attacker_connection_string)
         attacker = Attacker.extract_attacker(attack_event)
-        attacker = Attacker.insert_unique(attackerdb_session, attacker)
+        attacker = Attacker.insert_unique(attacker_session, attacker)
         db_name = attacker.get_db_name()
+        attacker_session.close()
         
         #inject, form response
         injection = Injection(self.data_dir, DockerClient(), attack_event, db_name)

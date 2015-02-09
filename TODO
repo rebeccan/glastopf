@@ -10,8 +10,6 @@ IMPLEMENTATION TODOs
     - delete all dataxx.db for attackers whose latest_activity is longer than one week
 
 - "connection_string_data" from configuration -> do something useful or delete
-    
-- map user injected values to useful queries to comments and users tables
 
 - clean Docker stuff:
     delete/rebuild specific db inside VM
@@ -33,6 +31,8 @@ IMPLEMENTATION TODOs
 IMPLEMENTATION IN PROGRESS
 --------------------------
 
+- map user injected values to useful queries to comments and users tables
+
 - use comments table instead of comments.txt for convincable SQL-injection delivered as a comment
     (problem in unknown-emulator and comments-emulator)
 
@@ -41,16 +41,20 @@ IMPLEMENTATION IN PROGRESS
     -> looks weired when an attacker tries to login normally
     "/comments", "?login=bla&password=bla
 
-- Check code: sqlalchemy sessions and concurrency
-    Every Thread should use its own Session.
-    Session blocks other sessions, when it first did a modifiyng operation until it commits.
-
-- Check SQLmap Response - what is getting dropped?:
-    [18:47:20] [WARNING] there is a possibility that the target (or WAF) is dropping 'suspicious' requests
+- Check SQLmap Responses
+    - what is getting dropped?:
+        [18:47:20] [WARNING] there is a possibility that the target (or WAF) is dropping 'suspicious' requests
+        
 
 
 IMPLEMENTATION DONEs
 --------------------
+
+
+- Check code: sqlalchemy sessions and concurrency
+    (Every Thread should use its own Session.
+    Session blocks other sessions, when it first did a modifying operation until it commits.)
+    Fixed for Attacker DB
 
 - BUG Fix Internal Server Error through set_logged_in Method for Cookieless Clients:
     [18:49:41] [WARNING] HTTP error codes detected during run: 500 (Internal Server Error) - 17 times
@@ -138,3 +142,15 @@ TESTING DONEs
 -------------
 
 _________________________________________________________________
+
+
+NOT DONES with Reason
+---------------------
+
+- eliminate DB errors and other info in dork page?
+    [12:54:10] [WARNING] there is a DBMS error found in the HTTP response body which could interfere with the results of the tests
+    reason:
+        dork pages are generated through Mnem_Service class over online Service mnemosyne from Honeynet Project
+        It is necessary to attract attckers -> need to keep it
+        
+        

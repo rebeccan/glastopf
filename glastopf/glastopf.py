@@ -76,7 +76,7 @@ class GlastopfHoneypot(object):
             "banner": conf_parser.get("misc", "banner").encode('latin1'),
         }
         
-        (self.attackerdb) = self.setup_attacker_database(conf_parser)
+        (self.attacker_connection_string) = self.setup_attacker_database(conf_parser)
         (self.connection_string_data) = self.setup_data_database(conf_parser)
         
         (self.maindb, self.dorkdb) = self.setup_main_database(conf_parser)
@@ -125,8 +125,6 @@ class GlastopfHoneypot(object):
         logger.info('Stopping Glastopf.')
         self.dork_generator.enabled = False
         self.workers_enabled = False
-        #stop resources
-        self.attackerdb.close()
         #TODO RN: stopf docker container, rights mgmt
         #docker.stop()
         
@@ -189,7 +187,7 @@ class GlastopfHoneypot(object):
     """
     sets up the database for attacker fingerprinting,
     which is needed during sqlinjected emulator
-    returns the session
+    returns the connection string
     """
     def setup_attacker_database(self, conf_parser):
         connection_string_attacker = conf_parser.get("attacker-database", "connection_string_attacker")
@@ -199,7 +197,7 @@ class GlastopfHoneypot(object):
         path_to_sqlitefile = str(connection_string_attacker).replace('sqlite:///', '')
         if not os.path.isfile(path_to_sqlitefile):
             Attacker.insert_unique(attackerdb_sess, Attacker('127.0.0.1'))
-        return attackerdb_session
+        return connection_string_attacker
     
     """
     sets up the original data database (filled with honeytokens), if not present yet.
@@ -310,7 +308,7 @@ class GlastopfHoneypot(object):
         request_handler = RequestHandler(os.path.join(self.work_dir, 'data/'))
         emulator = request_handler.get_handler(attack_event.matched_pattern)
         if(emulator.__class__.__name__ == "SQLinjectableEmulator"):
-            emulator.handle(attack_event, self.attackerdb, self.connection_string_data)
+            emulator.handle(attack_event, self.attacker_connection_string, self.connection_string_data)
         else:
             emulator.handle(attack_event)
         #end of emulator cascade -> take care about response    
