@@ -15,7 +15,7 @@ class CommentPoster(base_emulator.BaseEmulator):
     def __init__(self, data_dir):
         super(CommentPoster, self).__init__(data_dir)
 
-    def handle(self, attack_event, attacker_connection_string, connection_string_data):
+    def handle(self, attack_event, attacker_connection_string):
         
         surface_creator = create_surface.SurfaceCreator(self.data_dir)
         surface = surface_creator.get_index("Comments",

@@ -77,7 +77,7 @@ class GlastopfHoneypot(object):
         }
         
         (self.attacker_connection_string) = self.setup_attacker_database(conf_parser)
-        (self.connection_string_data) = self.setup_data_database(conf_parser)
+        self.setup_data_database()
         
         (self.maindb, self.dorkdb) = self.setup_main_database(conf_parser)
         
@@ -204,8 +204,8 @@ class GlastopfHoneypot(object):
     (needed during sqlinjected emulator)
     returns the connection string
     """
-    def setup_data_database(self, conf_parser):
-        connection_string_data = conf_parser.get("data-database", "connection_string_data")
+    def setup_data_database(self):
+        connection_string_data = 'sqlite:///db/data.db'
         seed.seed(connection_string_data)
         return connection_string_data
 
@@ -308,7 +308,7 @@ class GlastopfHoneypot(object):
         request_handler = RequestHandler(os.path.join(self.work_dir, 'data/'))
         emulator = request_handler.get_handler(attack_event.matched_pattern)
         if(emulator.__class__.__name__ == "SQLinjectableEmulator" or emulator.__class__.__name__ == "CommentPoster"):
-            emulator.handle(attack_event, self.attacker_connection_string, self.connection_string_data)
+            emulator.handle(attack_event, self.attacker_connection_string)
         else:
             emulator.handle(attack_event)
         #end of emulator cascade -> take care about response    

@@ -31,7 +31,7 @@ class SQLinjectableEmulator(base_emulator.BaseEmulator):
         super(SQLinjectableEmulator, self).__init__(data_dir)
 
 
-    def handle(self, attack_event, attacker_connection_string, connection_string_data):
+    def handle(self, attack_event, attacker_connection_string):
         #attacker fingerprinting and insertion in attacker.db
         db_name = Attacker.fingerprint(attacker_connection_string, attack_event)
         
