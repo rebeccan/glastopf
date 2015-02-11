@@ -4,7 +4,7 @@
     <id>0</id>
     <patternDescription>unknown</patternDescription>
     <patternString></patternString>
-    <module>unknown</module>
+    <module>sqlinjectable</module>
   </request>
   <request>
     <id>1</id>

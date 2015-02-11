@@ -73,7 +73,7 @@ class Classifier(object):
         # TODO: add some logic
         matched_pattern = matched_patterns[0]
         if len(matched_patterns) > 1:
-            if matched_patterns[0] == "unknown":
+            if matched_patterns[0] == "sqlinjectable":
                 matched_pattern = matched_patterns[1]
         else:
             matched_pattern = matched_patterns[0]
