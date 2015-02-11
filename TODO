@@ -33,9 +33,6 @@ IMPLEMENTATION IN PROGRESS
 
 - map user injected values to useful queries to comments and users tables
 
-- use comments table instead of comments.txt for convincable SQL-injection delivered as a comment
-    (problem in unknown-emulator and comments-emulator)
-
 - improve classification in requests.xml
     problem: SQLinjectableEmulator is only ran, when classified as sqlinjectable
     -> looks weired when an attacker tries to login normally
@@ -50,6 +47,8 @@ IMPLEMENTATION IN PROGRESS
 IMPLEMENTATION DONEs
 --------------------
 
+- use comments table instead of comments.txt for convincable SQL-injection delivered as a comment
+    (problem in unknown-emulator and comments-emulator)
 
 - Check code: sqlalchemy sessions and concurrency
     (Every Thread should use its own Session.

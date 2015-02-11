@@ -27,9 +27,9 @@ class SurfaceCreator(base_emulator.BaseEmulator):
         super(SurfaceCreator, self).__init__(data_dir)
         self.template_env = Environment(loader=FileSystemLoader(os.path.join(self.data_dir, "templates")))
 
-    def get_index(self, title="Title Title", target="/index", body="Some Body", footer="Footer Text"):
+    def get_index(self, title="Title Title", target="/index", body="Some Body", footer="Footer Text", subtitle = 'My Resource'):
         template = self.template_env.get_template('index.html')
-        surface_page = template.render(title=title, target=target, body=body, footer=footer)
+        surface_page = template.render(title=title, target=target, body=body, footer=footer, subtitle = subtitle)
         return surface_page
 
 

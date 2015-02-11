@@ -27,6 +27,7 @@ from glastopf.modules.handlers.emulators.session import set_logged_in, get_sid, 
 from urlparse import parse_qs
 from xml.etree import ElementTree
 import os
+import cgi
 
 
 class Injection(object):
@@ -53,7 +54,7 @@ class Injection(object):
         if ('password' in url_dict):
             self.password = url_dict['password'][0]
         if ('comment' in url_dict):
-            self.comment = url_dict['comment'][0]
+            self.comment = self.html_escape(url_dict['comment'][0])
         
         #parse URL
         query_dictionary = self.attack_event.http_request.request_query
@@ -62,16 +63,22 @@ class Injection(object):
         if(query_dictionary.has_key('password')):
             self.password = str(query_dictionary.get('password')[0])
         if(query_dictionary.has_key('comment')):
-            self.comment = str(query_dictionary.get('comment')[0])
+            self.comment = self.html_escape(str(query_dictionary.get('comment')[0]))
+            
         return (self.login, self.password, self.comment)
-        
+    
+    
+    def html_escape(self, comment):
+        return cgi.escape(comment) 
+    
     
     """
     injects the query accordingly to the user input and forms the response and embedds it into a template
     """
-    def getResponse(self):
+    def getResponse(self, base_template = None):
         reponse = ""
-        base_template = TemplateBuilder(self.data_dir)
+        if(base_template is None):
+            base_template = TemplateBuilder(self.data_dir)
         
         (login, password, comment) = self.getTaintedVars()
         sid = get_sid(self.attack_event)

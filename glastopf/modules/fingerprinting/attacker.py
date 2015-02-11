@@ -120,3 +120,18 @@ class Attacker(Base):
             return attacker_list[0]
         return None
     
+    
+    """
+    Does all:
+    Extracts the attacker from attack_event, inserts the attacker if not present yet,
+    closes the connection and returns the db_name for the attacker
+    """
+    @staticmethod
+    def fingerprint(attacker_connection_string, attack_event):
+        #attacker fingerprinting and insertion in attacker.db
+        attacker_session = Attacker.connect(attacker_connection_string)
+        attacker = Attacker.extract_attacker(attack_event)
+        attacker = Attacker.insert_unique(attacker_session, attacker)
+        db_name = attacker.get_db_name()
+        attacker_session.close()
+        return db_name

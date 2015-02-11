@@ -307,7 +307,7 @@ class GlastopfHoneypot(object):
         # Handle the request with the specific vulnerability module
         request_handler = RequestHandler(os.path.join(self.work_dir, 'data/'))
         emulator = request_handler.get_handler(attack_event.matched_pattern)
-        if(emulator.__class__.__name__ == "SQLinjectableEmulator"):
+        if(emulator.__class__.__name__ == "SQLinjectableEmulator" or emulator.__class__.__name__ == "CommentPoster"):
             emulator.handle(attack_event, self.attacker_connection_string, self.connection_string_data)
         else:
             emulator.handle(attack_event)
