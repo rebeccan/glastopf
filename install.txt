@@ -21,7 +21,8 @@ Note: Host machine needs to be a 64 Bit machine because GlastopfInjectable uses 
 	sudo ./configure --enable-bfr
 	sudo make && sudo make install
 	sudo gedit /etc/php5/apache2/php.ini
-	    add line: zend_extension = /usr/lib/php5/20090626+lfs/bfr.so
+	    add line: zend_extension =  /usr/lib/php5/20090626+lfs/bfr.so
+                                        /usr/lib/php5/20121212/bfr.so
 		
 - get glastopfInjectable code from repository
 	sudo mkdir /opt/glastopf
@@ -51,6 +52,8 @@ Note: Host machine needs to be a 64 Bit machine because GlastopfInjectable uses 
 		sudo python setup.py install
                 
 - install docker image and container needed for GlastopfInjectable virtualization
+        sudo glastopf-runner
+        Ctrl-C
         sudo python setup_docker.py
         Press Crtl-C to stop container execution, when you see
             "Successfully built c68e66c8d137
@@ -60,7 +63,7 @@ Note: Host machine needs to be a 64 Bit machine because GlastopfInjectable uses 
 	sudo glastopf-runner
 
 - see webpage in browser
-	http://127.0.0.1:8181/
+	http://127.0.0.1:80/
         
 - see docker STDOUT/STDERR logs in a terminal:
     docker logs -f {container_id}
