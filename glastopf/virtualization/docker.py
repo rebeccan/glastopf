@@ -37,6 +37,8 @@ def setup_docker(image = True, container = True):
         dst = temp_dir + "db/data.db"
         print src + " -> " + dst
         os.mkdir(temp_dir + "db")
+        if(not os.path.isfile(src)):
+            print "Error: data.db does not exist. Run 'sudo glastopf-runner' first!"
         shutil.copyfile(src, dst)
         #make directories
         os.mkdir(temp_dir + "glastopf/")
