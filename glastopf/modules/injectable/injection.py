@@ -92,10 +92,15 @@ class Injection(object):
             empty = True
             for row in injectionResult:
                 empty = False
-                success_msg = "Logged in as " + str(row['email'])
-                #authenticate session
-                sid = get_sid(self.attack_event)
-                set_logged_in(sid, success_msg)
+                success_msg = ""
+                if(row.has_key('email')):
+                    success_msg = "Logged in as " + str(row['email'])
+                    #authenticate session
+                    sid = get_sid(self.attack_event)
+                    set_logged_in(sid, success_msg)
+                elif(row.has_key('error')):
+                    #db error
+                    success_msg = row['error']
                 base_template.add_string("login_form", success_msg)
             if(empty):
                 login_template = TemplateBuilder(self.data_dir, "templates/login_form.html")
@@ -118,7 +123,7 @@ class Injection(object):
             #query
             query = "INSERT INTO comments (comment) VALUES ('" + comment + "')"
             injectionResult = self.client.manage_injection(self.db_name,'comments', query)
-            #response: comment shows up
+            #response: comment shows up, but insertion is blind, because no result is returned
         #retrieve comments
         query = "SELECT * from comments"
         injectionResult = self.client.manage_injection(self.db_name,'comments', query)

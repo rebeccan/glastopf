@@ -50,5 +50,8 @@ class LocalClient(object):
     
     @staticmethod
     def deserialze_row(row):
-        d = ast.literal_eval(row)
-        return d
+        try:
+            d = ast.literal_eval(row)
+            return d
+        except:
+            return {'error' : row}

@@ -20,6 +20,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Sequence
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import SQLAlchemyError
 
 Base = declarative_base()
 
@@ -48,8 +49,13 @@ class Comment(Base):
     
     @staticmethod
     def injection(session, query):
-        result = session.execute(query)
-        return Comment.serialize_rows(result)
+        try:
+            result = session.execute(query)
+            return Comment.serialize_rows(result)
+        except SQLAlchemyError as e:
+            error = "error: " + str(e)
+            print "SQLAlchemyError : " + error
+            return [error]
     
     @staticmethod
     def serialize_rows(rows):

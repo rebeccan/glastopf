@@ -39,7 +39,6 @@ class DockerClient(object):
             rows = []
             response = str(rfile.readline())
             while(response is not "" and not response.isspace()):
-                print response
                 rows.append(DockerClient.deserialze_row(response))
                 response = rfile.readline()
         finally:
@@ -49,8 +48,11 @@ class DockerClient(object):
     
     @staticmethod
     def deserialze_row(row):
-        d = ast.literal_eval(row)
-        return d
+        try:
+            d = ast.literal_eval(row)
+            return d
+        except:
+            return {'error' : row}
 
    
 """runs the docker_client for testing"""

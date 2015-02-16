@@ -35,10 +35,14 @@ IMPLEMENTATION TODOs
 IMPLEMENTATION IN PROGRESS
 --------------------------
 
-- Check SQLmap Responses
-    - what is getting dropped?:
-        [18:47:20] [WARNING] there is a possibility that the target (or WAF) is dropping 'suspicious' requests
-        
+
+    - Attune GlastopfInjectable's queries and answers better to sqlmap techniques
+        B: Boolean-based blind
+        E: Error-based
+        U: Union query-based
+        S: Stacked queries
+        T: Time-based blind
+        Q: Inline queries
 
 
 IMPLEMENTATION DONEs
@@ -154,8 +158,14 @@ NOT DONES with Reason
 
 - eliminate DB errors and other info in dork page?
     [12:54:10] [WARNING] there is a DBMS error found in the HTTP response body which could interfere with the results of the tests
-    reason:
+    reason for undone:
         dork pages are generated through Mnem_Service class over online Service mnemosyne from Honeynet Project
         It is necessary to attract attckers -> need to keep it
         
+        
+        
+- SQLmap says something is getting dropped:
+    18:47:20] [WARNING] there is a possibility that the target (or WAF) is dropping 'suspicious' requests
+    reason for undone:
+        could not reproduce this error 
         
