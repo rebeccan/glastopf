@@ -127,7 +127,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
         body = ''
         for r_part in self.response:
             body = body + r_part['body']
-            if not r_part['http_code'] is -1:
+            if r_part['http_code'] is not -1 and r_part['http_code'] is not 200:
                 http_code = r_part['http_code']
             for header in r_part['headers']:
                 headers.add(header)
