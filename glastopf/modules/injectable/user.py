@@ -56,9 +56,13 @@ class User(Base):
         try:
             result = session.execute(query)
             return User.serialize_rows(result)
-        except SQLAlchemyError as e:
+        except (SQLAlchemyError) as e:
+            print "SQLAlchemyError: " + str(e)
             error = "error: " + str(e)
-            print "SQLAlchemyError : " + error
+            return [error]
+        except Exception as e:
+            print "Any Exception: " + str(e)
+            error = "error: any exception occured"
             return [error]
     
     
