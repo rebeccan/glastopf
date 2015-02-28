@@ -31,11 +31,12 @@ Note: Host machine needs to be a 64 Bit machine because GlastopfInjectable uses 
 
 - install GlastopfInjectable Prerequisites:
 	Docker:
-		sudo apt-get update
-		sudo apt-get install docker.io
-		source /etc/bash_completion.d/docker.io
-		start docker to see if works:
-			sudo docker run -i -t ubuntu /bin/bash
+	    sudo apt-get update
+	    sudo apt-get install docker.io
+	    source /etc/bash_completion.d/docker.io
+	    start docker to see if works:
+		sudo docker run -i -t ubuntu /bin/bash
+        sudo pip install sqlparse
 
 - Get rid of python-pip bug in Ubuntu 14.01.4 before Glastopf installation (https://github.com/glastopf/glastopf/issues/200#issuecomment-59065414):
 	sudo rm -rf /usr/local/lib/python2.7/dist-packages/distribute-0.7.3-py2.7.egg-info/
