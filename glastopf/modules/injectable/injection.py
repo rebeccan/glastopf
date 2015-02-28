@@ -23,7 +23,7 @@ from glastopf.modules.handlers.emulators.surface.template_builder import Templat
 
 from glastopf.modules.handlers.emulators.session import set_logged_in, get_sid, is_logged_in, is_valid, get_logged_in
 
-
+import sqlparse
 from urlparse import parse_qs
 from xml.etree import ElementTree
 from time import sleep
@@ -88,8 +88,8 @@ class Injection(object):
         if(login is not None and password is not None):
             #query
             query = "SELECT * FROM users WHERE email = '" + login + "' AND password = '" + password + "'"
-            time_based_check_and_emulate_sleep(query)
-            injectionResult = self.client.manage_injection(self.db_name,'users', query)
+            self.check_and_emulate_sleep(query)
+            injectionResult = self.split_and_execute(query, 'users')
             #response
             empty = True
             for row in injectionResult:
@@ -102,7 +102,7 @@ class Injection(object):
                     set_logged_in(sid, success_msg)
                 elif(row.has_key('error')):
                     #db error -> set error response immediately
-                    error_msg = error_based_char_unescaped(row['error'])
+                    error_msg = self.char_unescape(row['error'])
                     self.attack_event.http_request.add_response(error_msg, http_code =400)
                     return ""
                 base_template.add_string("login_form", success_msg)
@@ -128,13 +128,13 @@ class Injection(object):
         if(comment is not None):
             #query
             query = "INSERT INTO comments (comment) VALUES ('" + comment + "')"
-            time_based_check_and_emulate_sleep(query)
-            injectionResult = self.client.manage_injection(self.db_name,'comments', query)
+            self.check_and_emulate_sleep(query)
+            injectionResult = self.split_and_execute(query, 'comments')
             #response: comment shows up, but insertion is blind, because no result is returned
         #retrieve comments
         query = "SELECT * from comments"
-        time_based_check_and_emulate_sleep(query)
-        injectionResult = self.client.manage_injection(self.db_name,'comments', query)
+        self.check_and_emulate_sleep(query)
+        injectionResult = self.split_and_execute(query, 'comments')
         commentsResponse = ""
         for item in injectionResult:
             commentsResponse = commentsResponse +  "<br/><br/>" + item['comment']
@@ -145,37 +145,48 @@ class Injection(object):
         return response
 
 
-"""
-unescape a string of the form "stringCHAR(97)+CHAR(98)+CHAR(99)string" to "stringabcstring"
-used to adapt to sqlmap error-based HTTP-response
-"""
-def error_based_char_unescaped(op_err_string):
-    all_chars = re.findall('CHAR\(\d+\)', op_err_string)
-    for char in all_chars:
-        number = int(re.findall('\d+', char)[0])
-        char_unescape = chr(number)
-        op_err_string = op_err_string.replace(char, char_unescape)
-    op_err_string = op_err_string.replace('+', '')
-    return op_err_string
+    """
+    For ERROR BASED attacks:
+    unescape a string of the form "stringCHAR(97)+CHAR(98)+CHAR(99)string" to "stringabcstring"
+    used to adapt to sqlmap error-based HTTP-response
+    """
+    def char_unescape(self, op_err_string):
+        all_chars = re.findall('CHAR\(\d+\)', op_err_string)
+        for char in all_chars:
+            number = int(re.findall('\d+', char)[0])
+            char_unescape = chr(number)
+            op_err_string = op_err_string.replace(char, char_unescape)
+        op_err_string = op_err_string.replace('+', '')
+        return op_err_string
+        
+    """
+    For TIME BASED attacks:
+    emulates sleep if found in query
+    """
+    def check_and_emulate_sleep(self, query):
+        sleep_cmd = re.findall('sleep\(\d+\)', query.lower())
+        print query
+        print sleep_cmd
+        if(len(sleep_cmd) > 0):
+            seconds = int(re.findall(r'\d+', sleep_cmd[0])[0])
+            sleep(seconds)
+            return True
+        return False
     
-"""
-emulates sleep if found in query
-"""
-def time_based_check_and_emulate_sleep(query):
-    sleep_cmd = re.findall('SLEEP\(\d+\)', query)
-    print query
-    print sleep_cmd
-    if(len(sleep_cmd) > 0):
-        seconds = int(re.findall(r'\d+', sleep_cmd[0])[0])
-        sleep(seconds)
-        return True
-    return False
-
-
-"""
-stacked queries
-"""
-def stacked_queries(script):
     
+    """
+    For STACKED QUERY attacks:
+    splits and executes statements
+    returns the result from the first stmt
+    """
+    def split_and_execute(self, statements, table =''):
+        queries = sqlparse.split(statements)
+        injectionResults = []
+        for query in queries:
+            injectionResults.append(self.client.manage_injection(self.db_name, table, query))
+        return injectionResults[0]
+        
 
+    def emulate_sqlite_blobs(self):
+        pass
 
