@@ -36,6 +36,9 @@ def seed(connection_string_data):
         datadb_session.add(User('blub@example.com', 'blub'))
         datadb_session.add(User('bla@example.com', 'bla'))
         
+        for i in range(0,1000):
+            datadb_session.add(User(str(i) + '@example.com', str(i)))
+        
         Comment.connect(connection_string_data)
         #--------------add comments-------------------------
         datadb_session.add(Comment('This is a comment.'))

@@ -187,6 +187,3 @@ class Injection(object):
         return injectionResults[0]
         
 
-    def emulate_sqlite_blobs(self):
-        pass
-
