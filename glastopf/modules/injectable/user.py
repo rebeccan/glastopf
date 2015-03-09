@@ -78,7 +78,11 @@ class User(Base):
     @staticmethod
     def row2dict(row):
         d = {}
-        d['id'] = str(row.id)
-        d['email'] = str(row.email)
-        d['password'] = str(row.password)
+        try:
+            d['id'] = str(row.id)
+            d['email'] = str(row.email)
+            d['password'] = str(row.password)
+        except:
+            d['error'] = str(row)
+            return d
         return d

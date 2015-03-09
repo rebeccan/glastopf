@@ -42,6 +42,7 @@ class Injection(object):
         self.login = None
         self.password = None
         self.comment = None
+        self.inline = None
 
     """
     identifies and extracts user input from the request line
@@ -65,6 +66,8 @@ class Injection(object):
             self.password = str(query_dictionary.get('password')[0])
         if(query_dictionary.has_key('comment')):
             self.comment = self.html_escape(str(query_dictionary.get('comment')[0]))
+        if(query_dictionary.has_key('inline')):
+            self.inline = str(query_dictionary.get('inline')[0])
             
         return (self.login, self.password, self.comment)
     
@@ -112,7 +115,7 @@ class Injection(object):
                 #login_template.add_string("login_msg", "Wrong username or password.")
                 #base_template.add_template_builder("login_form", login_template)
                 #non fancy response for better sqlmap boolean-based blind differentiation
-                return "Wrong username or password. Forgot credentials?"
+                return "Wrong username \"" + login + "\" or wrong password \"" + password + "\". Forgot credentials?"
         elif((login is None) != (password is None)):
             #non fancy response for better sqlmap boolean-based blind differentiation
             return "Wrong username or password. Forgot credentials?"
@@ -141,6 +144,16 @@ class Injection(object):
         base_template.add_string("comments", commentsResponse)
         #TODO RN: modify comments emulator?
         
+        if(self.inline is not None and not self.inline == ""):
+            #query
+            query = self.inline
+            injectionResult = self.split_and_execute(query, 'users')
+            for row in injectionResult:
+                if(row.has_key('error')):
+                    error_msg = self.char_unescape(row['error'])
+                    self.attack_event.http_request.add_response(error_msg)
+                    return ""
+            
         response = base_template.get_substitution()
         return response
 
