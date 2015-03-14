@@ -19,6 +19,7 @@ import os
 
 from modules.injectable.user import User
 from modules.injectable.comment import Comment
+from modules.injectable.creditcard import Creditcard
 from sqlalchemy import create_engine
 
 """
@@ -38,12 +39,21 @@ def seed(connection_string_data):
         
         for i in range(0,1000):
             datadb_session.add(User(str(i) + '@example.com', str(i)))
+        datadb_session.commit()
         
         Comment.connect(connection_string_data)
         #--------------add comments-------------------------
         datadb_session.add(Comment('This is a comment.'))
         datadb_session.add(Comment('Another comment.'))
+        datadb_session.commit()
         
+        
+        Creditcard.connect(connection_string_data)
+        #--------------add some credit cards --------------------
+        datadb_session.add(Creditcard("3111111111111117", "", "2019-06", "American Express", 5))
+        datadb_session.add(Creditcard("4111111111111111", "", "2021-02", "Visa", 99))
+        datadb_session.add(Creditcard("5111111111111118", "", "2017-08", "MasterCard", 573))
+         
         datadb_session.commit()
         datadb_session.close()
         return True
