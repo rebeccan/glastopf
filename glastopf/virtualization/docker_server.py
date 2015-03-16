@@ -65,19 +65,6 @@ class DockerServerHandler(SocketServer.StreamRequestHandler):
             session = User.connect(conn_str)
             #make injection
             injectionResult = User.injection(session, query)
-            
-            #test attatch db TODO RN: remove this
-            #db_name_attach = os.path.join(db_dir, 'data.db')
-            #q1 = "ATTACH DATABASE '" + db_name_attach +"' as datadb"
-            #print q1
-            #injectionResult = User.injection(session, q1)
-            #q2 = "INSERT INTO COMMENTS (comment) SELECT ( group_concat(id || email || password)) FROM datadb.users where id < 10"
-            #print q2
-            #injectionResult = User.injection(session, q2)
-            #q3 = "INSERT INTO COMMENTS (comment) PRAGMA database_list"
-            #print q3
-            #injectionResult = User.injection(session, q3)
-            
         session.commit()
         #close db connection
         session.close()
