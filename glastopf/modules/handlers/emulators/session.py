@@ -18,6 +18,7 @@
 from glastopf.modules.handlers import base_emulator
 from Cookie import SimpleCookie
 import threading
+import sys
 from datetime import datetime, timedelta
 
 
@@ -47,6 +48,13 @@ class SessionEmulator(base_emulator.BaseEmulator):
         global counter
         
         received_sid = get_sid(attack_event)
+        
+        #delete all sessions if they hit 10000
+        if(len(sessions) >= 10000):
+            with lock:
+                sessions = {}
+                counter = 1
+        
         if(not received_sid or not is_valid(received_sid)):
             #create new cookie
             cookie = SimpleCookie()

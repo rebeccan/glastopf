@@ -25,8 +25,10 @@ from glastopf.modules.injectable.db_copy import DB_copy
 from glastopf.modules.injectable.user import User
 from glastopf.modules.injectable.comment import Comment
 
-#TODO RN: SocketServer handles requests synchronously
-# -> implement threading with workers
+
+lock = threading.RLock()
+
+
 "DockerServer is running on Docker container. It receives and handles requests from DockerClient Glastopf host."
 class DockerServerHandler(SocketServer.StreamRequestHandler):
     
@@ -55,19 +57,21 @@ class DockerServerHandler(SocketServer.StreamRequestHandler):
         db_dir = os.getcwd() + '/db'
         copy = DB_copy(db_name, work_dir = db_dir)
         copy.create_copy()
-        #create session
-        conn_str = copy.get_db_copy_conn_str()
-        if(table == "comments"):
-            session = Comment.connect(conn_str)
-            #make injection
-            injectionResult = Comment.injection(session, query)
-        elif(table == "users"):
-            session = User.connect(conn_str)
-            #make injection
-            injectionResult = User.injection(session, query)
-        session.commit()
-        #close db connection
-        session.close()
+        global lock
+        with lock:
+            #create session
+            conn_str = copy.get_db_copy_conn_str()
+            if(table == "comments"):
+                session = Comment.connect(conn_str)
+                #make injection
+                injectionResult = Comment.injection(session, query)
+            elif(table == "users"):
+                session = User.connect(conn_str)
+                #make injection
+                injectionResult = User.injection(session, query)
+            session.commit()
+            #close db connection
+            session.close()
         return injectionResult
 
 
